@@ -10,8 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+<<<<<<< HEAD
             android:name=".SignInActivity"
             android:label="@string/title_activity_sign_in"
+=======
+            android:name=".SignUpActivity"
+            android:label="@string/title_activity_sign_up"
+>>>>>>> 645033bfa8d676551b0078539480414c3904a59a
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
