@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "169425642988-j3rnbl2cvnsh0bmj0bj1p7v3mfuj5ign.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.saluchen.thisproject",
+            "certificate_hash": "b81ef1367fb7d8d1a7cca620c7fc7411e7b2cf67"
+          }
+        },
+        {
           "client_id": "169425642988-u8brsi999ldepev3vg2j9bu4gjm8v2pp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
