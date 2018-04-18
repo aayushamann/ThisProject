@@ -1,17 +1,12 @@
 <resources>
     <string name="app_name">This Project</string>
-<<<<<<< HEAD
     <string name="title_activity_sign_in">SignInActivity</string>
-    <string name="email_hint">Enter your email</string>
-    <string name="password_hint">Enter your password</string>
     <string name="sign_in">Sign In</string>
-=======
     <string name="title_activity_sign_up">SignUpActivity</string>
 
     <string name="name_hint">Name</string>
     <string name="email_hint">E-mail</string>
     <string name="password_hint">Password</string>
     <string name="sign_up_button_text">Sign Up</string>
->>>>>>> 645033bfa8d676551b0078539480414c3904a59a
 </resources>
 
