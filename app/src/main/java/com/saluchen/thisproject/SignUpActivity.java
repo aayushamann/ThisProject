@@ -1,5 +1,6 @@
 package com.saluchen.thisproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -49,9 +50,8 @@ public class SignUpActivity extends AppCompatActivity {
         String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-
-//        Log.d("Email: ", email);
-//        Log.d("Password", password);
+        Log.d("Email: ", email);
+        Log.d("Password", password);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -61,6 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
 //                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
