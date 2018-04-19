@@ -22,13 +22,13 @@ public class SignInActivity extends AppCompatActivity {
 
     String TAG = "Sign In Activity";
     private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -47,20 +47,16 @@ public class SignInActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser != null)
-        {
-            Intent myIntent = new Intent(SignInActivity.this,
-                    MainActivity.class);
-            startActivity(myIntent);
+        if (currentUser != null) {
+            startActivity(new Intent(SignInActivity.this,
+                    MainActivity.class));
         }
-
     }
 
     public void onSignInButton(View view) {
 
-        EditText emailText = (EditText) findViewById(R.id.email);
-        EditText passwordText = (EditText) findViewById(R.id.password);
+        EditText emailText = findViewById(R.id.sign_in_email);
+        EditText passwordText = findViewById(R.id.sign_in_password);
 
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
@@ -81,16 +77,12 @@ public class SignInActivity extends AppCompatActivity {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            }
-
-                        // ...
+                        }
                     }
                 });
     }
 
     public void onOpenSignUpButton(View view) {
-
-
         startActivity(new Intent(SignInActivity.this,
                 SignUpActivity.class));
     }

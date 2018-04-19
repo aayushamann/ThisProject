@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    String TAG = "ThisProjectTag";
+    String TAG = "SignUpActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +43,13 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onSignUpButton(View view) {
-        EditText nameText = findViewById(R.id.user_profile_name);
-        EditText emailText = findViewById(R.id.user_email);
-        EditText passwordText = findViewById(R.id.user_password);
+        EditText nameText = findViewById(R.id.sign_up_name);
+        EditText emailText = findViewById(R.id.sign_up_email);
+        EditText passwordText = findViewById(R.id.sign_up_password);
 
         String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-        Log.d("Email: ", email);
-        Log.d("Password", password);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -70,8 +68,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
 //                            updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
