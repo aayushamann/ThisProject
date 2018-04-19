@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">This Project</string>
     <string name="title_activity_sign_in">SignInActivity</string>
-    <string name="sign_in">Sign In</string>
+    <string name="sign_in_button_text">Sign In</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
 
     <string name="name_hint">Name</string>

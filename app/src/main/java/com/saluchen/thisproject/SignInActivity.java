@@ -1,5 +1,6 @@
 package com.saluchen.thisproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,12 +31,18 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    public void signInButton(View view){
-        emailText = (EditText)findViewById(R.id.email);
-        passwordText = (EditText)findViewById(R.id.password);
+    public void onSignInButton(View view) {
+        emailText = (EditText) findViewById(R.id.email);
+        passwordText = (EditText) findViewById(R.id.password);
 
-        String email = emailText.toString();
-        String password = passwordText.toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
     }
 
+    public void onOpenSignUpButton(View view) {
+
+        Intent myIntent = new Intent(SignInActivity.this,
+                SignUpActivity.class);
+        startActivity(myIntent);
+    }
 }

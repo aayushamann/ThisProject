@@ -39,6 +39,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/sign_up_button_text"
-        android:onClick="signUpButton"/>
+        android:onClick="onSignUpButton"/>
 
 </LinearLayout>

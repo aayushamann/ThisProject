@@ -31,7 +31,14 @@
         android:id="@+id/sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_in"
-        android:onClick="signInButton"/>
+        android:text="@string/sign_in_button_text"
+        android:onClick="onSignInButton"/>
+
+    <Button
+        android:id="@+id/sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up_button_text"
+        android:onClick="onOpenSignUpButton"/>
 
 </LinearLayout>
