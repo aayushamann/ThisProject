@@ -10,10 +10,6 @@ import android.widget.EditText;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText nameText;
-    private EditText emailText;
-    private EditText passwordText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +28,9 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUpButton(View view) {
-        nameText = (EditText) findViewById(R.id.user_profile_name);
-        emailText = (EditText) findViewById(R.id.user_email);
-        passwordText = (EditText) findViewById(R.id.user_password);
+        EditText nameText = findViewById(R.id.user_profile_name);
+        EditText emailText = findViewById(R.id.user_email);
+        EditText passwordText = findViewById(R.id.user_password);
 
         String name = nameText.toString();
         String email = emailText.toString();
