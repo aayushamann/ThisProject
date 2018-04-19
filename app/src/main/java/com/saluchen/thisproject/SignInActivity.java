@@ -30,7 +30,7 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    public void signInButton(View view){
+    public void onSignInButton(View view){
         emailText = (EditText)findViewById(R.id.email);
         passwordText = (EditText)findViewById(R.id.password);
 
