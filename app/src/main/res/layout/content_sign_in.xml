@@ -1,44 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".SignInActivity"
     tools:showIn="@layout/activity_sign_in">
 
-    <EditText
-        android:id="@+id/sign_in_email"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/sign_in_email_hint"
-        android:inputType="textEmailAddress" />
+        android:layout_margin="16dp"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/sign_in_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/sign_in_password_hint"
-        android:inputType="textPassword" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/sign_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onSignInButton"
-        android:text="@string/sign_in_button_text" />
+            <EditText
+                android:id="@+id/sign_in_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/sign_in_email_hint"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
 
-    <Button
-        android:id="@+id/sign_up"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onOpenSignUpButton"
-        android:text="@string/sign_up_button_text" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-</LinearLayout>
+            <EditText
+                android:id="@+id/sign_in_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/sign_in_password_hint"
+                android:inputType="textPassword" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onSignInButton"
+            android:text="@string/sign_in_button_text" />
+
+        <Button
+            android:id="@+id/sign_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onOpenSignUpButton"
+            android:text="@string/sign_up_button_text" />
+    </LinearLayout>
+</ScrollView>

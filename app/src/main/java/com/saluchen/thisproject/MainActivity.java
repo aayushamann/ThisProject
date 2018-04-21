@@ -9,9 +9,15 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    String TAG = "MainActivity";
     private FirebaseAuth mAuth;
 
     @Override
@@ -21,16 +27,27 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView tv = (TextView)findViewById(R.id.textView);
+        final TextView tv = (TextView) findViewById(R.id.textView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user!=null)
-            tv.setText("Welcome "+user.getEmail());
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                tv.setText("Welcome " + userProfile.name + "(" + userProfile.phone + ")");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    public void onSignOutButton(View view)
-    {
+    public void onSignOutButton(View view) {
         mAuth.signOut();
         startActivity(new Intent(MainActivity.this,
                 SignInActivity.class));
