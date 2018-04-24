@@ -3,7 +3,7 @@
 
     <string name="title_activity_sign_up">Sign Up</string>
     <string name="title_activity_sign_in">Sign In</string>
-    <string name="title_activity_main">Home</string>
+    <string name="title_activity_home">Home</string>
 
     <!--  Sign up activity strings -->
     <string name="sign_up_button_text">Sign Up</string>
@@ -19,6 +19,12 @@
 
     <!--  Main activity strings  -->
     <string name="main_sign_out_button_text">Sign Out</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
 

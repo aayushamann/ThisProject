@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
+    private ProgressBar progressBar;
     String TAG = "SignUpActivity";
 
     @Override
@@ -33,9 +35,19 @@ public class SignUpActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+
+        progressBar = findViewById(R.id.sign_up_progress_bar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        progressBar.setVisibility(View.GONE);
     }
 
     public void onSignUpButton(View view) {
+        progressBar.setVisibility(View.VISIBLE);
+
         EditText nameText = findViewById(R.id.sign_up_name);
         EditText phoneText = findViewById(R.id.sign_up_phone);
         EditText emailText = findViewById(R.id.sign_up_email);
@@ -59,13 +71,14 @@ public class SignUpActivity extends AppCompatActivity {
                             DatabaseReference database = mDatabase.getReference();
                             database.child("user").child(user.getUid()).setValue(userProfile);
 
-                            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                            startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
 //                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(SignUpActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
 //                            updateUI(null);
                         }
                     }
