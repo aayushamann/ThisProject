@@ -72,6 +72,7 @@ public class SignUpActivity extends AppCompatActivity {
                             database.child("user").child(user.getUid()).setValue(userProfile);
 
                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+                            finish();
 //                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.

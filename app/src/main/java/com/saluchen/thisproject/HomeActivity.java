@@ -38,41 +38,12 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        progressBar = findViewById(R.id.home_cyclic_progress_bar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-            }
-        });
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        mAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-        final TextView tv = findViewById(R.id.textView);
-        final TextView nav_header_text1 = findViewById(R.id.nav_header_text1);
-        final TextView nav_header_text2 = findViewById(R.id.nav_header_text2);
-
-
-        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                tv.setText("Welcome " + userProfile.name + "\n(" + userProfile.phone + ")");
-//                nav_header_text1.setText(userProfile.name);
-//                nav_header_text2.setText(userProfile.phone);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -84,13 +55,34 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
 
-    public void onSignOutButton(View view) {
-        mAuth.signOut();
-        startActivity(new Intent(HomeActivity.this,
-                SignInActivity.class));
+        progressBar = findViewById(R.id.home_cyclic_progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
 
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        final TextView tv = findViewById(R.id.textView);
+
+        View headerView = navigationView.getHeaderView(0);
+        final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
+        final TextView navHeaderText2 = headerView.findViewById(R.id.nav_header_text2);
+
+        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                tv.setText("Welcome " + userProfile.name + "\n(" + userProfile.phone + ")");
+                navHeaderText1.setText(userProfile.name);
+                navHeaderText2.setText(userProfile.phone);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     @Override
@@ -143,6 +135,11 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_sign_out) {
+            mAuth.signOut();
+            startActivity(new Intent(HomeActivity.this,
+                    SignInActivity.class));
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
