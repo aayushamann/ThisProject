@@ -1,7 +1,6 @@
 package com.saluchen.thisproject;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,28 +11,21 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,16 +54,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.saluchen.thisproject.models.PlaceInfo;
 
@@ -85,10 +70,6 @@ public class HomeActivity extends AppCompatActivity
         ClusterManager.OnClusterItemClickListener<MyItem>, ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>,
         GoogleApiClient.OnConnectionFailedListener {
 
-
-    String TAG = "HomeActivity";
-    private FirebaseAuth mAuth;
-    ProgressBar progressBar;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private AutoCompleteTextView mSearchText;
     private ImageView mGps, mInfo, mPlacePicker;
@@ -110,6 +91,7 @@ public class HomeActivity extends AppCompatActivity
     private Marker mMarker;
     private String noTitle = "";
     private PlaceInfo mPlace;
+    private String TAG = "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +110,18 @@ public class HomeActivity extends AppCompatActivity
      /*   Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -135,6 +129,7 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);*/
     }
 
@@ -588,6 +583,37 @@ public class HomeActivity extends AppCompatActivity
     }
 
 /*
+        navigationView.setNavigationItemSelectedListener(this);
+
+        progressBar = findViewById(R.id.home_cyclic_progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        final TextView tv = findViewById(R.id.textView);
+
+        View headerView = navigationView.getHeaderView(0);
+        final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
+        final TextView navHeaderText2 = headerView.findViewById(R.id.nav_header_text2);
+
+        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                tv.setText("Welcome " + userProfile.name + "\n(" + userProfile.phone + ")");
+                navHeaderText1.setText(userProfile.name);
+                navHeaderText2.setText(userProfile.phone);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -597,31 +623,10 @@ public class HomeActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 */
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-  /*  @SuppressWarnings("StatementWithEmptyBody")
+  /*
+    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.

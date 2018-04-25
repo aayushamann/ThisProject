@@ -3,16 +3,25 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
+<<<<<<< HEAD
         <entry key="imageWizard">
+=======
+        <entry key="vectorWizard">
+>>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
           <value>
             <PersistentState>
               <option name="children">
                 <map>
+<<<<<<< HEAD
                   <entry key="imageAssetPanel">
+=======
+                  <entry key="vectorAssetStep">
+>>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
                     <value>
                       <PersistentState>
                         <option name="children">
                           <map>
+<<<<<<< HEAD
                             <entry key="actionbar">
                               <value>
                                 <PersistentState>
@@ -45,6 +54,14 @@
                                   <option name="values">
                                     <map>
                                       <entry key="outputName" value="ic_gps" />
+=======
+                            <entry key="clipartAsset">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_power_settings_new_black_24dp.xml" />
+>>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -54,7 +71,12 @@
                         </option>
                         <option name="values">
                           <map>
+<<<<<<< HEAD
                             <entry key="outputIconType" value="ACTIONBAR" />
+=======
+                            <entry key="outputName" value="ic_menu_signout" />
+                            <entry key="sourceFile" value="C:\Users\Ayush894" />
+>>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
                           </map>
                         </option>
                       </PersistentState>

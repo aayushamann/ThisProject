@@ -25,4 +25,5 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">22sp</item>
     </style>
+
 </resources>
