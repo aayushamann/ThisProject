@@ -11,6 +11,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -102,6 +103,10 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private ImageView dehaze;
 
+    private TextView textFavorites;
+    private TextView textSchedules;
+    private TextView textMusic;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,6 +151,38 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        textFavorites = findViewById(R.id.text_favorites);
+        textSchedules = findViewById(R.id.text_schedules);
+        textMusic = findViewById(R.id.text_music);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_favorites:
+                                textFavorites.setVisibility(View.VISIBLE);
+                                textSchedules.setVisibility(View.GONE);
+                                textMusic.setVisibility(View.GONE);
+                                break;
+                            case R.id.action_schedules:
+                                textFavorites.setVisibility(View.GONE);
+                                textSchedules.setVisibility(View.VISIBLE);
+                                textMusic.setVisibility(View.GONE);
+                                break;
+                            case R.id.action_music:
+                                textFavorites.setVisibility(View.GONE);
+                                textSchedules.setVisibility(View.GONE);
+                                textMusic.setVisibility(View.VISIBLE);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
@@ -154,15 +191,6 @@ public class HomeActivity extends AppCompatActivity
         getLocationPermission();
         //initMap();
         //setUpClusterer();
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
     }
 
@@ -259,7 +287,10 @@ public class HomeActivity extends AppCompatActivity
         }
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
         init();
-        Toast.makeText(this, "Drawing Circle", Toast.LENGTH_SHORT).show();
+        setUpCircle();
+    }
+
+    private void setUpCircle(){
         mMap.addCircle(new CircleOptions()
                 .center(new LatLng(26.0000000, 82.0000000))
                 .radius(1000)
@@ -325,7 +356,6 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this, x.getMarkers().toString(), Toast.LENGTH_SHORT).show();
         MarkerManager.Collection y = mClusterManager.getMarkerCollection();
         Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
-
     }
 
     private void addItems() {
