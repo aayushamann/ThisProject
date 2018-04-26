@@ -11,6 +11,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -187,7 +188,10 @@ public class HomeActivity extends AppCompatActivity
         }
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
         init();
-        Toast.makeText(this, "Drawing Circle", Toast.LENGTH_SHORT).show();
+        setUpCircle();
+    }
+
+    private void setUpCircle(){
         mMap.addCircle(new CircleOptions()
                 .center(new LatLng(26.0000000, 82.0000000))
                 .radius(1000)
@@ -253,7 +257,6 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this, x.getMarkers().toString(), Toast.LENGTH_SHORT).show();
         MarkerManager.Collection y = mClusterManager.getMarkerCollection();
         Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
-
     }
 
     private void addItems() {

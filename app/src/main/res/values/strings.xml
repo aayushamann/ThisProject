@@ -31,7 +31,11 @@
     <string name="bs_gallery">Select from gallery</string>
     <string name="bs_camera">Select from camera</string>
     <string name="bs_cancel">Cancel</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Map</string>>
+
+    <string name="text_favorites">Favorites</string>
+    <string name="text_schedules">Schedules</string>
+    <string name="text_music">Music</string>
 
 
 </resources>
