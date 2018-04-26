@@ -33,9 +33,9 @@
     <string name="bs_cancel">Cancel</string>
     <string name="title_activity_maps">Map</string>>
 
-    <string name="text_favorites">Request</string>
-    <string name="text_schedules">Respond</string>
-    <string name="text_music">Status</string>
+    <string name="request_str">Request</string>
+    <string name="respond_str">Respond</string>
+    <string name="status_str">Status</string>
 
 </resources>
 

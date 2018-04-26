@@ -47,6 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -102,9 +103,9 @@ public class HomeActivity extends AppCompatActivity
     private String TAG = "HomeActivity";
     private FirebaseAuth mAuth;
 
-    private TextView textFavorites;
-    private TextView textSchedules;
-    private TextView textMusic;
+    private TextView request_text;
+    private TextView respond_text;
+    private TextView status_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,38 +113,7 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-
-        textFavorites = (TextView) findViewById(R.id.text_favorites);
-        textSchedules = (TextView) findViewById(R.id.text_schedules);
-        textMusic = (TextView) findViewById(R.id.text_music);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_favorites:
-                                textFavorites.setVisibility(View.VISIBLE);
-                                textSchedules.setVisibility(View.GONE);
-                                textMusic.setVisibility(View.GONE);
-                                break;
-                            case R.id.action_schedules:
-                                textFavorites.setVisibility(View.GONE);
-                                textSchedules.setVisibility(View.VISIBLE);
-                                textMusic.setVisibility(View.GONE);
-                                break;
-                            case R.id.action_music:
-                                textFavorites.setVisibility(View.GONE);
-                                textSchedules.setVisibility(View.GONE);
-                                textMusic.setVisibility(View.VISIBLE);
-                                break;
-                        }
-                        return false;
-                    }
-                });
+        setBottomNavBar();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -195,6 +165,43 @@ public class HomeActivity extends AppCompatActivity
 //            }
 //        });
 
+    }
+
+    private void setBottomNavBar(){
+        request_text = (TextView) findViewById(R.id.request_text);
+        respond_text = (TextView) findViewById(R.id.respond_text);
+        status_text = (TextView) findViewById(R.id.status_text);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.request_action:
+                                Toast.makeText(HomeActivity.this,"Request",Toast.LENGTH_SHORT).show();
+                                request_text.setVisibility(View.VISIBLE);
+                                respond_text.setVisibility(View.GONE);
+                                status_text.setVisibility(View.GONE);
+                                break;
+                            case R.id.respond_action:
+                                Toast.makeText(HomeActivity.this,"Respond",Toast.LENGTH_SHORT).show();
+                                request_text.setVisibility(View.GONE);
+                                respond_text.setVisibility(View.VISIBLE);
+                                status_text.setVisibility(View.GONE);
+                                break;
+                            case R.id.status_action:
+                                Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
+                                request_text.setVisibility(View.GONE);
+                                respond_text.setVisibility(View.GONE);
+                                status_text.setVisibility(View.VISIBLE);
+                                break;
+                        }
+                        return false;
+                    }
+                });
     }
 
     @Override
@@ -288,6 +295,11 @@ public class HomeActivity extends AppCompatActivity
          */
 
         }
+        mMap.setPadding(0,0,0,100);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.getUiSettings().setCompassEnabled(false);
+
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
         init();
         setUpCircle();
@@ -502,25 +514,35 @@ public class HomeActivity extends AppCompatActivity
             if(mLocationPermissionsGranted){
 
                 final Task location = mFusedLocationProviderClient.getLastLocation();
+
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                            if(location!=null) {
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM,
-                                    "My Location",noPlaceInfo);
+                                        "My Location", noPlaceInfo);
+                            }
+                            else{
+                                Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
+                            }
 
                         }else{
-                            Log.d(TAG, "onComplete: current location is null");
+                            Log.d(TAG, "onCoplete: current location is null");
                             Toast.makeText(HomeActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
         }catch (SecurityException e){
+            Toast.makeText(HomeActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
+        catch (NullPointerException e){
+            Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }
@@ -706,7 +728,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Animate camera to the bounds
         try {
-            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
         } catch (Exception e) {
             e.printStackTrace();
         }

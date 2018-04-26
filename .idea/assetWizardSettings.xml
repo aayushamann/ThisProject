@@ -24,6 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="paddingPercent" value="-5" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -34,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_upward_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/device/ic_gps_fixed_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -44,9 +45,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_respond" />
+                                      <entry key="outputName" value="ic_gps" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="256be5" />
+                                      <entry key="themeColor" value="53ace5" />
                                     </map>
                                   </option>
                                 </PersistentState>

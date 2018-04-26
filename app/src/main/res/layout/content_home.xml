@@ -50,36 +50,36 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
         android:scaleType="centerCrop"
         android:id="@+id/ic_gps"
         android:src="@drawable/ic_gps"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="80dp"
         />
 
     <TextView
-        android:id="@+id/text_favorites"
+        android:id="@+id/request_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/text_favorites" />
+        android:text="@string/request_str"
+        android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/text_schedules"
+        android:id="@+id/respond_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/text_schedules"
+        android:text="@string/respond_str"
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/text_music"
+        android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/text_music"
+        android:text="@string/status_str"
         android:visibility="gone" />
 
     <android.support.design.widget.BottomNavigationView
@@ -87,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:itemBackground="@color/colorPrimary"
+        app:itemBackground="@color/colorAccent"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:menu="@menu/bottom_navigation_main" />
