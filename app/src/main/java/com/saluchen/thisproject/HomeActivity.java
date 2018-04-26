@@ -102,6 +102,7 @@ public class HomeActivity extends AppCompatActivity
     private PlaceInfo mPlace;
     private String TAG = "HomeActivity";
     private FirebaseAuth mAuth;
+    private ImageView dehaze;
 
     private TextView request_text;
     private TextView respond_text;
@@ -111,15 +112,23 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+
         setBottomNavBar();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        dehaze = (ImageView) findViewById(R.id.ic_dehaze);
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        dehaze.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -146,7 +155,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
@@ -155,15 +163,6 @@ public class HomeActivity extends AppCompatActivity
         getLocationPermission();
         //initMap();
         //setUpClusterer();
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
     }
 
@@ -309,9 +308,9 @@ public class HomeActivity extends AppCompatActivity
         mMap.addCircle(new CircleOptions()
                 .center(new LatLng(26.0000000, 82.0000000))
                 .radius(1000)
-                .strokeWidth(10)
-                .strokeColor(Color.GREEN)
-                .fillColor(Color.argb(128, 255, 0, 0))
+                .strokeWidth(0)
+                .strokeColor(Color.argb(128, 135, 206, 250))
+                .fillColor(Color.argb(128, 135, 206, 250))
                 .clickable(true));
 
         LatLngBounds bounds = toBounds(new LatLng(26.0000000, 82.0000000),1000);

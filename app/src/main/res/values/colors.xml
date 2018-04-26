@@ -4,4 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
+    <color name= "deepskyblue">#00bfff</color>
+    <color name= "skyblue">#00bfff</color>
+    <color name= "bottomnavbar">#00bfff</color>
+    <color name= "burlywood">#DEB887</color>
+    <color name= "lightseagreen">#20B2AA</color>
+    <color name= "grey">#778899</color>
+    <color name= "grey1">#A9A9A9</color>
+    <color name= "grey2">#808080</color>
+    <color name= "grey3">#696969</color>
+
 </resources>
