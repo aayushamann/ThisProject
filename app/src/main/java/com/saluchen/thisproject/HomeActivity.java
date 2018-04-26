@@ -15,9 +15,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -55,7 +56,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
@@ -93,11 +100,82 @@ public class HomeActivity extends AppCompatActivity
     private String noTitle = "";
     private PlaceInfo mPlace;
     private String TAG = "HomeActivity";
+    private FirebaseAuth mAuth;
+
+    private TextView textFavorites;
+    private TextView textSchedules;
+    private TextView textMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+
+        textFavorites = (TextView) findViewById(R.id.text_favorites);
+        textSchedules = (TextView) findViewById(R.id.text_schedules);
+        textMusic = (TextView) findViewById(R.id.text_music);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_favorites:
+                                textFavorites.setVisibility(View.VISIBLE);
+                                textSchedules.setVisibility(View.GONE);
+                                textMusic.setVisibility(View.GONE);
+                                break;
+                            case R.id.action_schedules:
+                                textFavorites.setVisibility(View.GONE);
+                                textSchedules.setVisibility(View.VISIBLE);
+                                textMusic.setVisibility(View.GONE);
+                                break;
+                            case R.id.action_music:
+                                textFavorites.setVisibility(View.GONE);
+                                textSchedules.setVisibility(View.GONE);
+                                textMusic.setVisibility(View.VISIBLE);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, null, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        View headerView = navigationView.getHeaderView(0);
+        final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
+        final TextView navHeaderText2 = headerView.findViewById(R.id.nav_header_text2);
+
+        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                navHeaderText1.setText(userProfile.name);
+                navHeaderText2.setText(userProfile.phone);
+//                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
 
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
@@ -108,30 +186,54 @@ public class HomeActivity extends AppCompatActivity
         //initMap();
         //setUpClusterer();
 
-     /*   Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        } else if (id == R.id.nav_sign_out) {
+            mAuth.signOut();
+            startActivity(new Intent(HomeActivity.this,
+                    SignInActivity.class));
+            finish();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        navigationView.setNavigationItemSelectedListener(this);*/
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private void getLocationPermission(){
@@ -585,80 +687,6 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
-/*
-        navigationView.setNavigationItemSelectedListener(this);
-
-        progressBar = findViewById(R.id.home_cyclic_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
-
-        mAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-        final TextView tv = findViewById(R.id.textView);
-
-        View headerView = navigationView.getHeaderView(0);
-        final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
-        final TextView navHeaderText2 = headerView.findViewById(R.id.nav_header_text2);
-
-        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                tv.setText("Welcome " + userProfile.name + "\n(" + userProfile.phone + ")");
-                navHeaderText1.setText(userProfile.name);
-                navHeaderText2.setText(userProfile.phone);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-*/
-  /*
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        } else if (id == R.id.nav_sign_out) {
-            mAuth.signOut();
-            startActivity(new Intent(HomeActivity.this,
-                    SignInActivity.class));
-            finish();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }*/
-
     @Override
     public boolean onClusterClick(com.google.maps.android.clustering.Cluster<MyItem> cluster) {
         // Show a toast with some info when the cluster is clicked.
@@ -751,10 +779,5 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
     }
 }
