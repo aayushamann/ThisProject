@@ -32,11 +32,19 @@
     <string name="bs_gallery">Select from gallery</string>
     <string name="bs_camera">Select from camera</string>
     <string name="bs_cancel">Cancel</string>
-    <string name="title_activity_maps">Map</string>>
+    <string name="title_activity_maps">Map</string>
 
-    <string name="text_favorites">Request</string>
-    <string name="text_schedules">Respond</string>
-    <string name="text_music">Status</string>
+
+    <!--  Request Dialog  -->
+    <string name="request_text">Request</string>
+    <string name="request_item_name_text">Item Name</string>
+    <string name="request_item_details">Item Details</string>
+    <string name="request_expected_date">Expected Delivery Date</string>
+    <string name="request_drop_location">Select Drop Location</string>
+
+    <string name="request_str">Request</string>
+    <string name="respond_str">Respond</string>
+    <string name="status_str">Status</string>
 
 </resources>
 

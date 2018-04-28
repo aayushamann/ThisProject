@@ -4,9 +4,9 @@
     <color name="colorPrimaryDark2">#303F9F</color>
     <color name="colorAccent2">#FF4081</color>
 
-    <color name="colorPrimary">#004d40</color>
-    <color name="colorPrimaryDark">#00251a</color>
-    <color name="colorAccent">#ffffff</color>
+    <color name="colorPrimary">#F5F5F5</color>
+    <color name="colorPrimaryDark">#C2C2C2</color>
+    <color name="colorAccent">#00C853</color>
 
     <color name="white">#FFFFFF</color>
 
@@ -28,6 +28,8 @@
     <color name="colorBlack">#000000</color>
     <color name="colorGreen">#004d40</color>
 
+    <color name="colorSilver">#FAFAFA</color>
+
     <color name="black_overlay">#66000000</color>
     <color name="white_overlay">#55ffffff</color>
 
@@ -35,6 +37,17 @@
 
     <!-- Colors used in menu card -->
     <color name="colorBlueLight">#4FC3F7</color>
-    <color name="colorGreenLight">#64DD17</color>
+    <color name="colorGreenLight">#00C853</color>
     <color name="colorRed">#F44336</color>
+
+    <color name= "deepskyblue">#00bfff</color>
+    <color name= "skyblue">#00bfff</color>
+    <color name= "bottomnavbar">#00bfff</color>
+    <color name= "burlywood">#DEB887</color>
+    <color name= "lightseagreen">#20B2AA</color>
+    <color name= "grey">#778899</color>
+    <color name= "grey1">#A9A9A9</color>
+    <color name= "grey2">#808080</color>
+    <color name= "grey3">#696969</color>
+
 </resources>

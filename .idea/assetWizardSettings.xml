@@ -3,67 +3,27 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
-<<<<<<< HEAD
-        <entry key="vectorWizard">
-||||||| merged common ancestors
-<<<<<<< HEAD
         <entry key="imageWizard">
-=======
-        <entry key="vectorWizard">
->>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
-=======
-        <entry key="imageWizard">
->>>>>>> b5d4edc6f79ebbf63dad28851c3862d1e979a275
           <value>
             <PersistentState>
               <option name="children">
                 <map>
-<<<<<<< HEAD
-                  <entry key="vectorAssetStep">
-||||||| merged common ancestors
-<<<<<<< HEAD
                   <entry key="imageAssetPanel">
-=======
-                  <entry key="vectorAssetStep">
->>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
-=======
-                  <entry key="imageAssetPanel">
->>>>>>> b5d4edc6f79ebbf63dad28851c3862d1e979a275
                     <value>
                       <PersistentState>
                         <option name="children">
                           <map>
-<<<<<<< HEAD
-                            <entry key="clipartAsset">
-                              <value>
-                                <PersistentState>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_dehaze_black_24dp.xml" />
-||||||| merged common ancestors
-<<<<<<< HEAD
                             <entry key="actionbar">
                               <value>
                                 <PersistentState>
                                   <option name="children">
                                     <map>
-                                      <entry key="clipArt">
-                                        <value>
-                                          <PersistentState>
-                                            <option name="values">
-                                              <map>
-                                                <entry key="paddingPercent" value="-10" />
-                                              </map>
-                                            </option>
-                                          </PersistentState>
-                                        </value>
-                                      </entry>
                                       <entry key="clipartAsset">
                                         <value>
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/device/ic_gps_fixed_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/communication/ic_location_on_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -73,51 +33,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_gps" />
-=======
-                            <entry key="clipartAsset">
-                              <value>
-                                <PersistentState>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_power_settings_new_black_24dp.xml" />
->>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
-=======
-                            <entry key="actionbar">
-                              <value>
-                                <PersistentState>
-                                  <option name="children">
-                                    <map>
-                                      <entry key="clipArt">
-                                        <value>
-                                          <PersistentState>
-                                            <option name="values">
-                                              <map>
-                                                <entry key="paddingPercent" value="-5" />
-                                              </map>
-                                            </option>
-                                          </PersistentState>
-                                        </value>
-                                      </entry>
-                                      <entry key="clipartAsset">
-                                        <value>
-                                          <PersistentState>
-                                            <option name="values">
-                                              <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_upward_black_24dp.xml" />
-                                              </map>
-                                            </option>
-                                          </PersistentState>
-                                        </value>
-                                      </entry>
-                                    </map>
-                                  </option>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="outputName" value="ic_respond" />
+                                      <entry key="outputName" value="ic_image_marker" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="256be5" />
->>>>>>> b5d4edc6f79ebbf63dad28851c3862d1e979a275
+                                      <entry key="themeColor" value="39bde5" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -127,20 +45,7 @@
                         </option>
                         <option name="values">
                           <map>
-<<<<<<< HEAD
-                            <entry key="color" value="4b4b4b" />
-                            <entry key="outputName" value="ic_dehaze" />
-                            <entry key="sourceFile" value="C:\Users\Ayush894" />
-||||||| merged common ancestors
-<<<<<<< HEAD
                             <entry key="outputIconType" value="ACTIONBAR" />
-=======
-                            <entry key="outputName" value="ic_menu_signout" />
-                            <entry key="sourceFile" value="C:\Users\Ayush894" />
->>>>>>> 30e2fede3e3356a4d82ea6db7d30d9eac1ad9554
-=======
-                            <entry key="outputIconType" value="ACTIONBAR" />
->>>>>>> b5d4edc6f79ebbf63dad28851c3862d1e979a275
                           </map>
                         </option>
                       </PersistentState>

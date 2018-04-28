@@ -52,11 +52,14 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".ResponseDialog"
-            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth"></activity>
-        <activity android:name=".RequestDialog"></activity>
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth" >
+        </activity>
+        <activity android:name=".RequestDialog"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth" >
+        </activity>
     </application>
-
 </manifest>

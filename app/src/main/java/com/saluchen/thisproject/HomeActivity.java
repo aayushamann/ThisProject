@@ -2,6 +2,7 @@ package com.saluchen.thisproject;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -47,7 +48,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -65,12 +68,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -103,14 +110,17 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private ImageView dehaze;
 
-    private TextView textFavorites;
-    private TextView textSchedules;
-    private TextView textMusic;
+    private TextView request_text;
+    private TextView respond_text;
+    private TextView status_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        setBottomNavBar();
+
         dehaze = (ImageView) findViewById(R.id.ic_dehaze);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -151,40 +161,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        textFavorites = findViewById(R.id.text_favorites);
-        textSchedules = findViewById(R.id.text_schedules);
-        textMusic = findViewById(R.id.text_music);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_favorites:
-                                textFavorites.setVisibility(View.VISIBLE);
-                                textSchedules.setVisibility(View.GONE);
-                                textMusic.setVisibility(View.GONE);
-                                break;
-                            case R.id.action_schedules:
-                                textFavorites.setVisibility(View.GONE);
-                                textSchedules.setVisibility(View.VISIBLE);
-                                textMusic.setVisibility(View.GONE);
-                                startActivity(new Intent(HomeActivity.this,
-                                        ResponseDialog.class));
-                                break;
-                            case R.id.action_music:
-                                textFavorites.setVisibility(View.GONE);
-                                textSchedules.setVisibility(View.GONE);
-                                textMusic.setVisibility(View.VISIBLE);
-                                break;
-                        }
-                        return false;
-                    }
-                });
-
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
@@ -194,6 +170,68 @@ public class HomeActivity extends AppCompatActivity
         //initMap();
         //setUpClusterer();
 
+    }
+
+    public void dragMap(){
+
+        ImageView iv = (ImageView)findViewById(R.id.imageMarker);
+        iv.setVisibility(View.VISIBLE);
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                //get latlng at the center by calling
+                LatLng midLatLng = mMap.getCameraPosition().target;
+                Log.d(TAG,midLatLng.toString());
+            }
+        });
+    }
+
+    private void setBottomNavBar(){
+        request_text = (TextView) findViewById(R.id.request_text);
+        respond_text = (TextView) findViewById(R.id.respond_text);
+        status_text = (TextView) findViewById(R.id.status_text);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.request_action:
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(HomeActivity.this,
+                                        RequestDialog.class));
+//                                request_text.setVisibility(View.VISIBLE);
+//                                respond_text.setVisibility(View.GONE);
+//                                status_text.setVisibility(View.GONE);
+                                break;
+
+                            case R.id.respond_action:
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this,"Set Response Location",Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(HomeActivity.this,
+                                        ResponseDialog.class));
+//                                request_text.setVisibility(View.GONE);
+//                                respond_text.setVisibility(View.VISIBLE);
+//                                status_text.setVisibility(View.GONE);
+                                break;
+                            case R.id.status_action:
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
+//                                request_text.setVisibility(View.GONE);
+//                                respond_text.setVisibility(View.GONE);
+//                                status_text.setVisibility(View.VISIBLE);
+                                break;
+                        }
+                        return false;
+                    }
+                });
     }
 
     @Override
@@ -287,7 +325,13 @@ public class HomeActivity extends AppCompatActivity
          */
 
         }
+        mMap.setPadding(0,0,0,100);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.getUiSettings().setCompassEnabled(false);
+
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
+
         init();
         setUpCircle();
     }
@@ -296,9 +340,9 @@ public class HomeActivity extends AppCompatActivity
         mMap.addCircle(new CircleOptions()
                 .center(new LatLng(26.0000000, 82.0000000))
                 .radius(1000)
-                .strokeWidth(10)
-                .strokeColor(Color.GREEN)
-                .fillColor(Color.argb(128, 255, 0, 0))
+                .strokeWidth(0)
+                .strokeColor(Color.argb(128, 135, 206, 250))
+                .fillColor(Color.argb(128, 135, 206, 250))
                 .clickable(true));
 
         LatLngBounds bounds = toBounds(new LatLng(26.0000000, 82.0000000),1000);
@@ -310,7 +354,6 @@ public class HomeActivity extends AppCompatActivity
                 mMap.animateCamera(cameraUpdate);
             }
         });
-
 
         Log.d(TAG,bounds.northeast.toString());
         Log.d(TAG,bounds.southwest.toString());
@@ -332,19 +375,25 @@ public class HomeActivity extends AppCompatActivity
         init_modal_bottomsheet();
     }
 
+
     private void setUpClusterer() {
         // Position the map.(26.2848686, 82.0805832)
         //getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(26.2848686, 82.0805832), 10));
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
+
         mClusterManager = new ClusterManager<MyItem>(this, getMap());
+        final CustomRenderer renderer = new CustomRenderer(this,mMap,mClusterManager);
+
+        mClusterManager.setRenderer(renderer);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
         getMap().setOnInfoWindowClickListener(mClusterManager);
+
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
         mClusterManager.setOnClusterItemClickListener(this);
@@ -501,25 +550,35 @@ public class HomeActivity extends AppCompatActivity
             if(mLocationPermissionsGranted){
 
                 final Task location = mFusedLocationProviderClient.getLastLocation();
+
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                            if(location!=null) {
+                                moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM,
-                                    "My Location",noPlaceInfo);
+                                        "My Location", noPlaceInfo);
+                            }
+                            else{
+                                Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
+                            }
 
                         }else{
-                            Log.d(TAG, "onComplete: current location is null");
+                            Log.d(TAG, "onCoplete: current location is null");
                             Toast.makeText(HomeActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
         }catch (SecurityException e){
+            Toast.makeText(HomeActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
+        catch (NullPointerException e){
+            Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
         }
     }
@@ -529,7 +588,6 @@ public class HomeActivity extends AppCompatActivity
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         //mMap.clear();
-
         if(placeInfo != null){
             try{
                 Toast.makeText(this, "PlaceInfo Wala", Toast.LENGTH_SHORT).show();
@@ -560,7 +618,8 @@ public class HomeActivity extends AppCompatActivity
                         .title(title)
                         .snippet(snippet)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                mMap.addMarker(options);
+                mMarker = mMap.addMarker(options);
+
             }
             else{
                 Toast.makeText(this, "My location", Toast.LENGTH_SHORT).show();
@@ -601,6 +660,7 @@ public class HomeActivity extends AppCompatActivity
         else{
             Toast.makeText(this, "Location Unavailable",Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
@@ -663,8 +723,6 @@ public class HomeActivity extends AppCompatActivity
         }
     };
 
-
-
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
 
@@ -705,7 +763,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Animate camera to the bounds
         try {
-            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -775,8 +833,10 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(HomeActivity.this, item.getPosition()+"onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
 }
