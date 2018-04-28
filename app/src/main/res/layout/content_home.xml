@@ -11,12 +11,10 @@
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         android:background="@drawable/white_border"
         android:id="@+id/relLayout1">
 
@@ -58,6 +56,15 @@
         android:layout_marginBottom="80dp"
         />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageMarker"
+        android:src="@drawable/ic_image_marker"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/request_text"
         android:layout_width="wrap_content"
@@ -88,8 +95,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:itemBackground="@color/white"
-        app:itemIconTint="@color/lightseagreen"
-        app:itemTextColor="@color/grey1"
-        app:menu="@menu/bottom_navigation_main" />
+        app:itemIconTint="@color/grey3"
+        app:itemTextColor="@color/grey3"
+        app:menu="@menu/bottom_navigation_main"
+        />
 
 </RelativeLayout>

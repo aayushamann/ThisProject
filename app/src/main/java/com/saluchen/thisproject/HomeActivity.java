@@ -2,6 +2,7 @@ package com.saluchen.thisproject;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,12 +68,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -166,6 +172,20 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    public void dragMap(){
+
+        ImageView iv = (ImageView)findViewById(R.id.imageMarker);
+        iv.setVisibility(View.VISIBLE);
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                //get latlng at the center by calling
+                LatLng midLatLng = mMap.getCameraPosition().target;
+                Log.d(TAG,midLatLng.toString());
+            }
+        });
+    }
+
     private void setBottomNavBar(){
         request_text = (TextView) findViewById(R.id.request_text);
         respond_text = (TextView) findViewById(R.id.respond_text);
@@ -180,22 +200,28 @@ public class HomeActivity extends AppCompatActivity
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.request_action:
-                                Toast.makeText(HomeActivity.this,"Request",Toast.LENGTH_SHORT).show();
-                                request_text.setVisibility(View.VISIBLE);
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
+/*                                request_text.setVisibility(View.VISIBLE);
                                 respond_text.setVisibility(View.GONE);
-                                status_text.setVisibility(View.GONE);
+                                status_text.setVisibility(View.GONE);*/
                                 break;
                             case R.id.respond_action:
-                                Toast.makeText(HomeActivity.this,"Respond",Toast.LENGTH_SHORT).show();
-                                request_text.setVisibility(View.GONE);
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this,"Set Response Location",Toast.LENGTH_SHORT).show();
+/*                                request_text.setVisibility(View.GONE);
                                 respond_text.setVisibility(View.VISIBLE);
-                                status_text.setVisibility(View.GONE);
+                                status_text.setVisibility(View.GONE);*/
                                 break;
                             case R.id.status_action:
+                                mMap.clear();
+                                dragMap();
                                 Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
-                                request_text.setVisibility(View.GONE);
+/*                                request_text.setVisibility(View.GONE);
                                 respond_text.setVisibility(View.GONE);
-                                status_text.setVisibility(View.VISIBLE);
+                                status_text.setVisibility(View.VISIBLE);*/
                                 break;
                         }
                         return false;
@@ -300,6 +326,7 @@ public class HomeActivity extends AppCompatActivity
         mMap.getUiSettings().setCompassEnabled(false);
 
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
+
         init();
         setUpCircle();
     }
@@ -323,7 +350,6 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-
         Log.d(TAG,bounds.northeast.toString());
         Log.d(TAG,bounds.southwest.toString());
 
@@ -344,19 +370,25 @@ public class HomeActivity extends AppCompatActivity
         init_modal_bottomsheet();
     }
 
+
     private void setUpClusterer() {
         // Position the map.(26.2848686, 82.0805832)
         //getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(26.2848686, 82.0805832), 10));
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
+
         mClusterManager = new ClusterManager<MyItem>(this, getMap());
+        final CustomRenderer renderer = new CustomRenderer(this,mMap,mClusterManager);
+
+        mClusterManager.setRenderer(renderer);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
         getMap().setOnInfoWindowClickListener(mClusterManager);
+
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
         mClusterManager.setOnClusterItemClickListener(this);
@@ -551,7 +583,6 @@ public class HomeActivity extends AppCompatActivity
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         //mMap.clear();
-
         if(placeInfo != null){
             try{
                 Toast.makeText(this, "PlaceInfo Wala", Toast.LENGTH_SHORT).show();
@@ -582,7 +613,8 @@ public class HomeActivity extends AppCompatActivity
                         .title(title)
                         .snippet(snippet)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                mMap.addMarker(options);
+                mMarker = mMap.addMarker(options);
+
             }
             else{
                 Toast.makeText(this, "My location", Toast.LENGTH_SHORT).show();
@@ -623,6 +655,7 @@ public class HomeActivity extends AppCompatActivity
         else{
             Toast.makeText(this, "Location Unavailable",Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
@@ -684,8 +717,6 @@ public class HomeActivity extends AppCompatActivity
             places.release();
         }
     };
-
-
 
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: checking google services version");
@@ -797,8 +828,10 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(HomeActivity.this, item.getPosition()+"onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
 }
