@@ -172,6 +172,8 @@ public class HomeActivity extends AppCompatActivity
                                 textFavorites.setVisibility(View.GONE);
                                 textSchedules.setVisibility(View.VISIBLE);
                                 textMusic.setVisibility(View.GONE);
+                                startActivity(new Intent(HomeActivity.this,
+                                        ResponseDialog.class));
                                 break;
                             case R.id.action_music:
                                 textFavorites.setVisibility(View.GONE);

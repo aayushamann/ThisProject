@@ -1,7 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary2">#3F51B5</color>
+    <color name="colorPrimaryDark2">#303F9F</color>
+    <color name="colorAccent2">#FF4081</color>
+
+    <color name="colorPrimary">#004d40</color>
+    <color name="colorPrimaryDark">#00251a</color>
+    <color name="colorAccent">#ffffff</color>
+
     <color name="white">#FFFFFF</color>
+
+    <color name="colorOrange">#EF6C00</color>
+    <color name="colorOrangeDark">#E65100</color>
+    <color name="colorAccent3">#FFC107</color>
+
+
+    <color name="colorGold">#ffd700</color>
+    <color name="colorBrown">#3e2723</color>
+    <color name="colorBrownLight">#5d4037</color>
+    <color name="colorPurpleDark">#aa00ff</color>
+    <color name="colorPurple">#d500f9</color>
+    <color name="colorDeepPurpleDark">#6200ea</color>
+    <color name="colorDeepPurple">#651fff</color>
+    <color name="colorGreyDark">#212121</color>
+    <color name="colorGrey">#424242</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorGreen">#004d40</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="white_overlay">#55ffffff</color>
+
+    <color name="transparent">#00000000</color>
+
+    <!-- Colors used in menu card -->
+    <color name="colorBlueLight">#4FC3F7</color>
+    <color name="colorGreenLight">#64DD17</color>
+    <color name="colorRed">#F44336</color>
 </resources>

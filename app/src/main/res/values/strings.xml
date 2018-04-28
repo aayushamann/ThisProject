@@ -11,6 +11,7 @@
     <string name="sign_up_email_hint">E-mail</string>
     <string name="sign_up_password_hint">Password</string>
     <string name="sign_up_phone">Phone Number</string>
+    <string name="text_not_registered">Not Registered?</string>
 
     <!--  Sign in activity strings -->
     <string name="sign_in_button_text">Sign In</string>

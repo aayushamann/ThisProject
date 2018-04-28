@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/white_overlay"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".SignInActivity"
     tools:showIn="@layout/activity_sign_in">
 
     <ProgressBar
         android:id="@+id/sign_in_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyleHorizontal"/>
+        android:visibility="gone" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -24,6 +24,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="16dp"
             android:orientation="vertical">
 
@@ -57,15 +58,40 @@
                 android:id="@+id/sign_in"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorGreen"
                 android:onClick="onSignInButton"
-                android:text="@string/sign_in_button_text" />
+                android:text="@string/sign_in_button_text"
+                android:textColor="@color/white" />
 
-            <Button
-                android:id="@+id/sign_up"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onOpenSignUpButton"
-                android:text="@string/sign_up_button_text" />
+
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/open_sign_up_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:background="#00000000"
+            android:onClick="onOpenSignUpButton"
+            android:text="@string/sign_up_button_text"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/open_sign_up_button"
+            android:gravity="center"
+            android:text="@string/text_not_registered"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</RelativeLayout>

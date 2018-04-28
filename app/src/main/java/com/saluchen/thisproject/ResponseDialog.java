@@ -1,9 +1,9 @@
 package com.saluchen.thisproject;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 
-public class ResponseDialog extends AppCompatActivity {
+public class ResponseDialog extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
