@@ -64,6 +64,7 @@
             android:layout_marginTop="4dp"
             android:background="@color/colorBlack"
             android:text="@string/request_drop_location"
+            android:onClick="onRequestDropLocationButton"
             android:textColor="@color/colorGreenLight" />
     </LinearLayout>
 </ScrollView>

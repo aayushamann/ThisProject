@@ -1,8 +1,8 @@
 package com.saluchen.thisproject;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class RequestDialog extends Activity {
+public class RequestDialog extends AppCompatActivity {
 
     Calendar myCalendar = Calendar.getInstance();
     private EditText itemNameText;
@@ -26,6 +26,15 @@ public class RequestDialog extends Activity {
         itemNameText = findViewById(R.id.request_item_name);
         itemDetailsText = findViewById(R.id.request_item_details);
         expectedDateText = findViewById(R.id.request_expected_date);
+
+        expectedDateText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(RequestDialog.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
     }
 
     DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -51,7 +60,6 @@ public class RequestDialog extends Activity {
         String itemName = itemNameText.getText().toString();
         String itemDetails = itemDetailsText.getText().toString();
         String date = expectedDateText.getText().toString();
-
 
 
         finish();

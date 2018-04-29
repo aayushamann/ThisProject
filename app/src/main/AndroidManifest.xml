@@ -59,7 +59,7 @@
             android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth" >
         </activity>
         <activity android:name=".RequestDialog"
-            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth" >
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
     </application>
 </manifest>
