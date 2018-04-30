@@ -40,6 +40,7 @@
     <string name="request_item_name_text">Item Name</string>
     <string name="request_item_details">Item Details</string>
     <string name="request_expected_date">Expected Delivery Date</string>
+    <string name="request_expected_time">Expected Delivery Time</string>
     <string name="request_drop_location">Select Drop Location</string>
 
     <string name="request_str">Request</string>

@@ -55,6 +55,18 @@
             android:hint="@string/request_expected_date"
             android:inputType="date" />
 
+        <EditText
+            android:id="@+id/request_expected_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:hint="@string/request_expected_time"
+            android:inputType="date" />
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
