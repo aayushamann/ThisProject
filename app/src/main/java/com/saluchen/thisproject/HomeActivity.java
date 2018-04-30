@@ -2,7 +2,6 @@ package com.saluchen.thisproject;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -49,9 +48,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,9 +66,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
 
@@ -170,7 +165,6 @@ public class HomeActivity extends AppCompatActivity
         getLocationPermission();
         //initMap();
         //setUpClusterer();
-
     }
 
     public void dragMap(){
@@ -182,6 +176,7 @@ public class HomeActivity extends AppCompatActivity
         bottomNavigationView.setVisibility(View.GONE);
         final Button done_button = (Button)findViewById(R.id.done_button);
         done_button.setVisibility(View.VISIBLE);
+
         ImageView iv = (ImageView)findViewById(R.id.imageMarker);
         iv.setVisibility(View.VISIBLE);
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -204,9 +199,11 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        Log.d("XXXXX","AA raha hai");
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
         if(requestCode==2)
@@ -229,9 +226,11 @@ public class HomeActivity extends AppCompatActivity
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.request_action:
+
                                 Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
                                 startActivityForResult(new Intent(HomeActivity.this,
                                         RequestDialog.class),2);
+
                                 break;
 
                             case R.id.respond_action:
@@ -240,14 +239,12 @@ public class HomeActivity extends AppCompatActivity
                                 Toast.makeText(HomeActivity.this,"Set Response Location",Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(HomeActivity.this,
                                         ResponseDialog.class));
+
                                 break;
                             case R.id.status_action:
                                 mMap.clear();
                                 dragMap();
                                 Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
-//                                request_text.setVisibility(View.GONE);
-//                                respond_text.setVisibility(View.GONE);
-//                                status_text.setVisibility(View.VISIBLE);
                                 break;
                         }
                         return false;
