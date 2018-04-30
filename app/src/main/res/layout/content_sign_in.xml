@@ -16,50 +16,51 @@
         android:indeterminate="true"
         android:visibility="gone" />
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:layout_centerInParent="true"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/sign_in_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/sign_in_email_hint"
-                    android:inputType="textEmailAddress" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/sign_in_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/sign_in_password_hint"
-                    android:inputType="textPassword" />
-            </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/sign_in"
+            <EditText
+                android:id="@+id/sign_in_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorBlack"
-                android:onClick="onSignInButton"
-                android:layout_marginTop="8dp"
-                android:text="@string/sign_in_button_text"
-                android:textColor="@color/colorGreenLight" />
-        </LinearLayout>
+                android:ems="10"
+                android:hint="@string/sign_in_email_hint"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/sign_in_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/sign_in_password_hint"
+                android:inputType="textPassword" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlack"
+            android:onClick="onSignInButton"
+            android:layout_marginTop="8dp"
+            android:text="@string/sign_in_button_text"
+            android:textColor="@color/colorGreenLight" />
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -85,7 +86,7 @@
             android:layout_above="@id/open_sign_up_button"
             android:gravity="center"
             android:text="@string/text_not_registered"
-            android:textColor="@color/colorGreenLight"
+            android:textColor="@color/colorGreen"
             android:textSize="16sp" />
     </RelativeLayout>
 </RelativeLayout>

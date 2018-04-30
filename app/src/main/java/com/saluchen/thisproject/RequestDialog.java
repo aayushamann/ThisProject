@@ -1,11 +1,13 @@
 package com.saluchen.thisproject;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,6 +51,14 @@ public class RequestDialog extends AppCompatActivity {
         }
     };
 
+    TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
+            myCalendar.set(Calendar.MINUTE, minute);
+        }
+    };
+
     private void updateLabel() {
 
         String myFormat = "dd/MM/yyyy"; //In which you need put here
@@ -60,6 +70,7 @@ public class RequestDialog extends AppCompatActivity {
         String itemName = itemNameText.getText().toString();
         String itemDetails = itemDetailsText.getText().toString();
         String date = expectedDateText.getText().toString();
+
 
 
         finish();

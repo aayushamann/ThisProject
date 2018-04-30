@@ -1,7 +1,10 @@
 package com.saluchen.thisproject;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +17,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -61,37 +63,51 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void onSignInButton(View view) {
-        progressBar.setVisibility(View.VISIBLE);
+        if (!isInternetConnected()) {
+            Toast.makeText(SignInActivity.this, "Connection error",
+                    Toast.LENGTH_SHORT).show();
+        }
+        else {
+            progressBar.setVisibility(View.VISIBLE);
 
-        EditText emailText = findViewById(R.id.sign_in_email);
-        EditText passwordText = findViewById(R.id.sign_in_password);
+            EditText emailText = findViewById(R.id.sign_in_email);
+            EditText passwordText = findViewById(R.id.sign_in_password);
 
-        String email = emailText.getText().toString();
-        String password = passwordText.getText().toString();
+            String email = emailText.getText().toString();
+            String password = passwordText.getText().toString();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if(isServicesOK()){
-                                startActivity(new Intent(SignInActivity.this,
-                                        HomeActivity.class));
-                                finish();
+            try {
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithEmail:success");
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    if (isServicesOK()) {
+                                        startActivity(new Intent(SignInActivity.this,
+                                                HomeActivity.class));
+                                        finish();
+                                    }
+
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    Toast.makeText(SignInActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.GONE);
+                                }
                             }
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                });
+                        });
+            }
+            catch (Exception e) {
+                Toast.makeText(SignInActivity.this, "Invalid Credentials.",
+                        Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                e.printStackTrace();
+            }
+        }
     }
 
     public void onOpenSignUpButton(View view) {
@@ -118,5 +134,12 @@ public class SignInActivity extends AppCompatActivity {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
+    }
+
+    public boolean isInternetConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
