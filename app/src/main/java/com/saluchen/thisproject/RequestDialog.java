@@ -1,8 +1,10 @@
 package com.saluchen.thisproject;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,16 +24,23 @@ public class RequestDialog extends AppCompatActivity {
     private EditText itemNameText;
     private EditText itemDetailsText;
     private EditText expectedDateText;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.request_dialog);
 
+        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
+                Context.MODE_PRIVATE);
+
         itemNameText = findViewById(R.id.request_item_name);
         itemDetailsText = findViewById(R.id.request_item_details);
         expectedDateText = findViewById(R.id.request_expected_date);
 
+        itemNameText.setText(sharedPreferences.getString(Config.itemName, ""));
+        itemDetailsText.setText(sharedPreferences.getString(Config.itemDetail, ""));
+        expectedDateText.setText(sharedPreferences.getString(Config.expectedDate, ""));
 
         expectedDateText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +84,14 @@ public class RequestDialog extends AppCompatActivity {
         String itemName = itemNameText.getText().toString();
         String itemDetails = itemDetailsText.getText().toString();
         String date = expectedDateText.getText().toString();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Config.itemName, itemName);
+        editor.putString(Config.itemDetail, itemDetails);
+        editor.putString(Config.expectedDate, date);
+        editor.apply();
+
+
         String message="hello ";
         Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
         intent.putExtra("MESSAGE",message);

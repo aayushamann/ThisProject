@@ -2,7 +2,9 @@ package com.saluchen.thisproject;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -109,6 +111,7 @@ public class HomeActivity extends AppCompatActivity
     private TextView request_text;
     private TextView respond_text;
     private TextView status_text;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +168,9 @@ public class HomeActivity extends AppCompatActivity
         getLocationPermission();
         //initMap();
         //setUpClusterer();
+
+        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
+                Context.MODE_PRIVATE);
     }
 
     public void dragMap(){
@@ -195,6 +201,10 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG,midLatLng.toString());
                 done_button.setVisibility(View.GONE);
                 bottomNavigationView.setVisibility(View.VISIBLE);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
             }
         });
     }
@@ -258,7 +268,12 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            String item = sharedPreferences.getString(Config.itemName, "");
+            if (item.equals("")) {
+                super.onBackPressed();
+            } else {
+                startActivity(new Intent(HomeActivity.this, RequestDialog.class));
+            }
         }
     }
 

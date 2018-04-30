@@ -65,7 +65,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="sans-serif"
             android:hint="@string/request_expected_time"
-            android:inputType="date" />
+            android:inputType="time" />
 
         <Button
             android:layout_width="match_parent"
