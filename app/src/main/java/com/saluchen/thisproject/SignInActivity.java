@@ -3,6 +3,7 @@ package com.saluchen.thisproject;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ public class SignInActivity extends AppCompatActivity {
     String TAG = "Sign In Activity";
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
+    private SharedPreferences sharedPreferences;
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
     @Override
@@ -40,6 +42,8 @@ public class SignInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         progressBar = findViewById(R.id.sign_in_progress_bar);
+        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
+                Context.MODE_PRIVATE);
     }
 
     @Override
@@ -73,8 +77,8 @@ public class SignInActivity extends AppCompatActivity {
             EditText emailText = findViewById(R.id.sign_in_email);
             EditText passwordText = findViewById(R.id.sign_in_password);
 
-            String email = emailText.getText().toString();
-            String password = passwordText.getText().toString();
+            final String email = emailText.getText().toString();
+            final String password = passwordText.getText().toString();
 
             try {
                 mAuth.signInWithEmailAndPassword(email, password)
@@ -85,6 +89,10 @@ public class SignInActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString(Config.CURRENT_EMAIL, email);
+                                    editor.putString(Config.CURRENT_PASSWORD, password);
+                                    editor.apply();
                                     if (isServicesOK()) {
                                         startActivity(new Intent(SignInActivity.this,
                                                 HomeActivity.class));
@@ -97,6 +105,9 @@ public class SignInActivity extends AppCompatActivity {
                                     Toast.makeText(SignInActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.clear();
+                                    editor.apply();
                                 }
                             }
                         });

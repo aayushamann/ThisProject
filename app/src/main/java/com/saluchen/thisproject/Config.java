@@ -8,4 +8,9 @@ public class Config {
     public static final String expectedDate = "expected_date";
     public static final String expectedTime = "expected_time";
 
+    public static final String CURRENT_PASSWORD = "current_password";
+    public static final String CURRENT_EMAIL = "current_email";
+    public static final String CURRENT_PHONE = "current_phone";
+    public static final String CURRENT_NAME = "current_name";
+
 }
