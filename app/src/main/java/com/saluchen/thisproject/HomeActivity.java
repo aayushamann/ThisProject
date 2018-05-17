@@ -69,6 +69,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
+import com.saluchen.thisproject.Database.CurrentRequest;
+import com.saluchen.thisproject.Database.UserProfile;
 import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
 
@@ -104,13 +106,16 @@ public class HomeActivity extends AppCompatActivity
     private Marker mMarker;
     private String noTitle = "";
     private PlaceInfo mPlace;
+
     private String TAG = "HomeActivity";
     private FirebaseAuth mAuth;
-    private ImageView dehaze;
+    private FirebaseDatabase mDatabase;
 
+    private ImageView dehaze;
     private TextView request_text;
     private TextView respond_text;
     private TextView status_text;
+    private String requestCount;
     SharedPreferences sharedPreferences;
 
     @Override
@@ -139,8 +144,9 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
         final FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference database = mDatabase.getReference();
 
         View headerView = navigationView.getHeaderView(0);
         final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
@@ -171,6 +177,31 @@ public class HomeActivity extends AppCompatActivity
 
         sharedPreferences = getSharedPreferences(Config.sharedPrefs,
                 Context.MODE_PRIVATE);
+    }
+
+    // [To push new request to Real time Database]
+    public void onNewRequest(String latitude, String longitude, String title, String details,
+                                  String datetime, String acceptid) {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = mDatabase.getReference();
+
+        database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                requestCount = userProfile.requestCount;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
+                acceptid);
+
+        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
+        requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
+        database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
     }
 
     public void dragMap(){

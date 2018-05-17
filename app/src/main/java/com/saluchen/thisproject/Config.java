@@ -13,4 +13,11 @@ public class Config {
     public static final String CURRENT_PHONE = "current_phone";
     public static final String CURRENT_NAME = "current_name";
 
+
+    // Database Configuration
+    public static final String TABLE_USER = "user";
+    public static final String TABLE_REQUEST = "request";
+
+    public static final String REQUEST_COUNT = "requestCount";
+
 }

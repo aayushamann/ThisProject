@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.saluchen.thisproject.Database.UserProfile;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -67,10 +68,10 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            UserProfile userProfile = new UserProfile(name, phone);
+                            UserProfile userProfile = new UserProfile(name, phone, "0");
 
                             DatabaseReference database = mDatabase.getReference();
-                            database.child("user").child(user.getUid()).setValue(userProfile);
+                            database.child(Config.TABLE_USER).child(user.getUid()).setValue(userProfile);
 
                             startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
                             finish();

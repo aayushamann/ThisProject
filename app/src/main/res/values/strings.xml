@@ -63,11 +63,15 @@
     <string name="profile_password_edit_desc">Password Edit Asset</string>
     <string name="profile_password_text">**********</string>
     <string name="profile_save_button">Save</string>
-    
+
     <!--  Change Password Activity -->
     <string name="current_password_hint">Current Password</string>
     <string name="new_password_hint">New Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
+    <string name="title_activity_register_user">User Registration</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
 
