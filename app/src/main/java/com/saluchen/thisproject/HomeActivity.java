@@ -1,9 +1,11 @@
 package com.saluchen.thisproject;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -30,17 +32,26 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
@@ -70,22 +81,26 @@ import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
 import com.saluchen.thisproject.Database.CurrentRequest;
+
+import com.saluchen.thisproject.Database.Response;
 import com.saluchen.thisproject.Database.UserProfile;
 import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
-
+import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity
 
+public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<MyItem>, ClusterManager.OnClusterInfoWindowClickListener<MyItem>,
         ClusterManager.OnClusterItemClickListener<MyItem>, ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private static int typ = -1;
     private AutoCompleteTextView mSearchText;
     private ImageView mGps, mInfo, mPlacePicker;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -94,8 +109,10 @@ public class HomeActivity extends AppCompatActivity
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private ClusterManager<MyItem> mClusterManager;
+
     android.widget.Button btn_gmap,btn_call,btn_whatsapp,btn_setlocation;
     android.support.design.widget.BottomSheetDialog request_dialog_bs,response_dialog_bs;
+
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutoCompleteAdapter mPlaceAutocompleteAdapter;
     private GoogleApiClient mGoogleApiClient;
@@ -115,6 +132,10 @@ public class HomeActivity extends AppCompatActivity
     private TextView request_text;
     private TextView respond_text;
     private TextView status_text;
+
+    EditText radius_limit,time_limit;
+    int radius,time;
+
     private String requestCount;
     SharedPreferences sharedPreferences;
 
@@ -126,6 +147,7 @@ public class HomeActivity extends AppCompatActivity
         setBottomNavBar();
 
         dehaze = (ImageView) findViewById(R.id.ic_dehaze);
+
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -170,8 +192,8 @@ public class HomeActivity extends AppCompatActivity
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
         //mPlacePicker = (ImageView) findViewById(R.id.place_picker);
-
         getLocationPermission();
+        //displayLocationSettingsRequest();
         //initMap();
         //setUpClusterer();
 
@@ -180,7 +202,8 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // [To push new request to Real time Database]
-    public void onNewRequest(String latitude, String longitude, String title, String details,
+
+    public void onAddRequest(String latitude, String longitude, String title, String details,
                                   String datetime, String acceptid) {
         final FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference database = mDatabase.getReference();
@@ -196,12 +219,25 @@ public class HomeActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
-                acceptid);
+        CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime, acceptid);
 
         database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
         requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
         database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
+    }
+
+    // [To push responded item to Real Time Database]
+    public void onSelectResponse(String requestUserID, String requestID, String lastLocation,
+                                 String status, String delay) {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = mDatabase.getReference();
+
+        Response response = new Response(lastLocation, status, delay);
+        database.child(Config.TABLE_RESPONSE).child(user.getUid()).child(requestUserID)
+                .child(requestID).setValue(response);
+
+        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(Config.REQUEST_COUNT)
+                .child(Config.REQUEST_ACCEPT_ID).setValue(user.getUid());
     }
 
     public void dragMap(){
@@ -228,7 +264,23 @@ public class HomeActivity extends AppCompatActivity
         done_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG,"DONE CLICKED");
                 LatLng midLatLng = mMap.getCameraPosition().target;
+                Double midlat = midLatLng.latitude;
+                Double midlng = midLatLng.longitude;
+                String midlatt = midlat.toString();
+                String midlngg = midlng.toString();
+
+                if(typ==1) {
+                    Log.d(TAG,"Made a successful request");
+                    //onAddRequest(midlatt, midlngg, itemName, itemDetails, date, "0");
+                }
+                else if(typ==2)
+                {
+                    Log.d("radius",String.valueOf(radius));
+                    Log.d(TAG,"Made a successful response");
+                }
+
                 Log.d(TAG,midLatLng.toString());
                 done_button.setVisibility(View.GONE);
                 bottomNavigationView.setVisibility(View.VISIBLE);
@@ -240,16 +292,41 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-
+    String itemName,itemDetails,date;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         Log.d("XXXXX","AA raha hai");
         super.onActivityResult(requestCode, resultCode, data);
-        // check if the request code is same as what is passed  here it is 2
-        if(resultCode==2)
-        {
-            dragMap();
+
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.d("XXXXX","OKAY");
+                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        getDeviceLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Log.d("XXXXX","CANCELLED");
+                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        break;
+                }
+                break;
+
+            case 2:
+                Bundle extras = data.getExtras();
+                for (String key : extras.keySet())
+                {
+                    Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
+                }
+
+                itemName = extras.getString("itemName");
+                itemDetails = extras.getString("itemDetails");
+                date = extras.getString("expectedDate");
+                typ = 1;
+                dragMap();
         }
     }
 
@@ -267,37 +344,43 @@ public class HomeActivity extends AppCompatActivity
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.request_action:
-
+                                typ = 1;
+                                init_request_modal_bottomsheet();
                                 Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
                                 startActivityForResult(new Intent(HomeActivity.this,
                                         RequestDialog.class),2);
                                 break;
 
                             case R.id.respond_action:
-                                if(response_dialog_bs.isShowing()){
-                                    response_dialog_bs.dismiss();
-                                }
-                                else{
-                                    response_dialog_bs.show();
-                                }
+                                typ = 2;
+                                init_response_modal_bottomsheet();
+                                response_dialog_bs.show();
+                                //mMap.clear();
+                                //dragMap();
 
                                 btn_setlocation.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        Log.d("RADIUS LIMIT",radius_limit.getText().toString());
+/*                                        if(radius_limit!=null && time_limit!=null) {
+                                            radius = Integer.parseInt(radius_limit.getText().toString());
+                                            time = Integer.parseInt(time_limit.getText().toString());
+                                        }*/
+
                                         if(response_dialog_bs.isShowing()){
                                             response_dialog_bs.dismiss();
                                         }
                                         dragMap();
                                     }
                                 });
-                                //mMap.clear();
-                                //dragMap();
+
                                 Toast.makeText(HomeActivity.this,"Set Response Location",Toast.LENGTH_SHORT).show();
                                 //startActivity(new Intent(HomeActivity.this,
                                 //      ResponseDialog.class));
-
                                 break;
+
                             case R.id.status_action:
+                                typ = 3;
                                 mMap.clear();
                                 dragMap();
                                 Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
@@ -354,6 +437,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void getLocationPermission(){
+        initMap();
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {android.Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -363,7 +447,8 @@ public class HomeActivity extends AppCompatActivity
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionsGranted = true;
-                initMap();
+                displayLocationSettingsRequest();
+
             }else{
                 ActivityCompat.requestPermissions(this,
                         permissions,
@@ -390,7 +475,7 @@ public class HomeActivity extends AppCompatActivity
         mMap = googleMap;
 
         if (mLocationPermissionsGranted) {
-            getDeviceLocation();
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -411,10 +496,10 @@ public class HomeActivity extends AppCompatActivity
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(HomeActivity.this));
 
         init();
-        //setUpCircle();
     }
 
     private void setUpCircle(LatLng latLng){
+        Log.d(TAG,"SETTING UP CIRCLE");
         mMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(1000)
@@ -452,19 +537,18 @@ public class HomeActivity extends AppCompatActivity
         setUpClusterer(latLng);
         //init_modal_bottomsheet();
         //init_request_modal_bottomsheet();
-        init_response_modal_bottomsheet();
+        //init_response_modal_bottomsheet();
     }
 
     private void setUpClusterer(LatLng latLng) {
+
         // Position the map.(26.2848686, 82.0805832)
         //getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(26.2848686, 82.0805832), 10));
-
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
 
         mClusterManager = new ClusterManager<MyItem>(this, getMap());
         final CustomRenderer renderer = new CustomRenderer(this,mMap,mClusterManager);
-
         mClusterManager.setRenderer(renderer);
 
         // Point the map's listeners at the listeners implemented by the cluster
@@ -479,7 +563,8 @@ public class HomeActivity extends AppCompatActivity
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
         // Add cluster items (markers) to the cluster manager.
-        //addItems();
+
+        addItems(latLng);
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
         Log.d(TAG,x.toString());
@@ -515,6 +600,7 @@ public class HomeActivity extends AppCompatActivity
         return mMap;
     }
 
+
     public void init_request_modal_bottomsheet() {
         View modalbottomsheet = getLayoutInflater().inflate(R.layout.request_modal_bottomsheet, null);
 
@@ -522,21 +608,17 @@ public class HomeActivity extends AppCompatActivity
         request_dialog_bs.setContentView(modalbottomsheet);
         request_dialog_bs.setCanceledOnTouchOutside(true);
         request_dialog_bs.setCancelable(true);
-
-        btn_call = (android.widget.Button) modalbottomsheet.findViewById(R.id.btn_call);
-        btn_whatsapp = (android.widget.Button) modalbottomsheet.findViewById(R.id.btn_whatsapp);
-        btn_gmap = (android.widget.Button) modalbottomsheet.findViewById(R.id.btn_gmap);
     }
 
     public void init_response_modal_bottomsheet() {
         View modalbottomsheet = getLayoutInflater().inflate(R.layout.response_modal_bottomsheet, null);
-
         response_dialog_bs = new android.support.design.widget.BottomSheetDialog(this);
         response_dialog_bs.setContentView(modalbottomsheet);
         response_dialog_bs.setCanceledOnTouchOutside(true);
         response_dialog_bs.setCancelable(true);
         btn_setlocation = (android.widget.Button) modalbottomsheet.findViewById(R.id.choose_location);
-
+        radius_limit = modalbottomsheet.findViewById(R.id.radius_limit);
+        time_limit = modalbottomsheet.findViewById(R.id.time_limit);
     }
 
     public LatLngBounds toBounds(LatLng center, double radiusInMeters) {
@@ -594,7 +676,83 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+/*      mInfo.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.d(TAG, "onClick: clicked place info");
+            try{
+                if(mMarker.isInfoWindowShown()){
+                    mMarker.hideInfoWindow();
+                }else{
+                    Log.d(TAG, "onClick: place info: " + mPlace.toString());
+                    mMarker.showInfoWindow();
+                }
+            }catch (NullPointerException e){
+                Log.e(TAG, "onClick: NullPointerException: " + e.getMessage() );
+            }
+        }
+    });
+
+    mPlacePicker.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+            try {
+                startActivityForResult(builder.build(MapActivity.this), PLACE_PICKER_REQUEST);
+            } catch (GooglePlayServicesRepairableException e) {
+                Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage() );
+            } catch (GooglePlayServicesNotAvailableException e) {
+                Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage() );
+            }
+        }
+    });*/
+
         hideSoftKeyboard();
+    }
+
+    public void displayLocationSettingsRequest(){
+        Log.i(TAG, "DIIIIIIIIISPLAY.");
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.i(TAG, "All location settings are satisfied.");
+                        getDeviceLocation();
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult(HomeActivity.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(TAG, "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
+        });
     }
 
     private void getDeviceLocation(){
@@ -613,7 +771,7 @@ public class HomeActivity extends AppCompatActivity
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-                            if(location!=null) {
+                            if(currentLocation!=null) {
                                 mMap.clear();
                                 setUpCircle(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                                 /*moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
@@ -625,7 +783,7 @@ public class HomeActivity extends AppCompatActivity
                             }
 
                         }else{
-                            Log.d(TAG, "onCoplete: current location is null");
+                            Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(HomeActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -644,7 +802,6 @@ public class HomeActivity extends AppCompatActivity
     private void moveCamera(LatLng latLng, float zoom, String title, PlaceInfo placeInfo){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
         //mMap.clear();
         if(placeInfo != null){
             try{
@@ -718,7 +875,6 @@ public class HomeActivity extends AppCompatActivity
         else{
             Toast.makeText(this, "Location Unavailable",Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private AdapterView.OnItemClickListener mAutocompleteClickListener = new AdapterView.OnItemClickListener() {
@@ -842,7 +998,6 @@ public class HomeActivity extends AppCompatActivity
         Log.d(TAG, "onClusterItemClick");
         // Does nothing, but you could go into the user's profile page, for example.
         // Toast.makeText(MapActivity.this, item.getTitle()+"onClusterItemClick", Toast.LENGTH_SHORT).show();
-        init_request_modal_bottomsheet();
         return false;
     }
 
@@ -859,6 +1014,7 @@ public class HomeActivity extends AppCompatActivity
         else{
             request_dialog_bs.show();
         }
+
         btn_whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -889,6 +1045,7 @@ public class HomeActivity extends AppCompatActivity
         // Does nothing, but you could go into the user's profile page, for example.
         Toast.makeText(HomeActivity.this, item.getPosition()+"onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
     }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

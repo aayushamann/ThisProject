@@ -78,6 +78,5 @@
             android:text="@string/request_drop_location"
             android:textColor="@color/colorGreenLight"
             android:id="@+id/drop_location_button"/>
-
     </LinearLayout>
 </ScrollView>

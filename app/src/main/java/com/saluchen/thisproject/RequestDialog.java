@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+
 public class RequestDialog extends AppCompatActivity {
 
     Calendar myCalendar = Calendar.getInstance();
@@ -68,7 +69,15 @@ public class RequestDialog extends AppCompatActivity {
 
                 String message="hello ";
                 Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
-                intent.putExtra("MESSAGE",message);
+                Bundle extras = new Bundle();
+                extras.putString("itemName",itemName);
+                extras.putString("itemDetails",itemDetails);
+                extras.putString("expectedDate",date);
+                for (String key : extras.keySet())
+                {
+                    Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
+                }
+                intent.putExtras(extras);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 setResult(2,intent);
                 finish();
@@ -104,6 +113,7 @@ public class RequestDialog extends AppCompatActivity {
     }
 
 /*    public void onRequestDropLocationButton(View view) {
+
         Log.d("Button","Drop Pressed");
         String itemName = itemNameText.getText().toString();
         String itemDetails = itemDetailsText.getText().toString();
@@ -126,7 +136,7 @@ public class RequestDialog extends AppCompatActivity {
 */
     @Override
     public void onBackPressed() {
-        String message="hello ";
+        String message="FromRequestDialog ";
         Log.d("Button","Back Pressed");
         Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
         intent.putExtra("MESSAGE",message);
