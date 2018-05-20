@@ -4,20 +4,20 @@ public class CurrentRequest {
 
     public String latitude;
     public String longitude;
-    public String requestTitle;
+    public String request_title;
     public String details;
-    public String dateTime;
+    public String datetime;
     public String accept_id;
 
     public CurrentRequest() {}
 
-    public CurrentRequest (String latitude, String longitude, String requestTitle, String details,
-                           String dateTime, String accept_id) {
+    public CurrentRequest (String latitude, String longitude, String request_title, String details,
+                           String datetime, String accept_id) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.requestTitle = requestTitle;
+        this.request_title = request_title;
         this.details = details;
-        this.dateTime = dateTime;
+        this.datetime = datetime;
         this.accept_id = accept_id;
     }
 

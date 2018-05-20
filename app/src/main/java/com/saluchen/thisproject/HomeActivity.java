@@ -181,28 +181,29 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // [To push new request to Real time Database]
-    public void onAddRequest(String latitude, String longitude, String title, String details,
-                                  String datetime, String acceptid) {
+    public void onAddRequest(final String latitude, final String longitude, final String title,
+                             final String details, final String datetime, final String accept_id) {
         final FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference database = mDatabase.getReference();
+        final DatabaseReference database = mDatabase.getReference();
 
         database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 requestCount = userProfile.request_count;
+                Log.d("RequestCount: ", requestCount);
+                CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
+                        accept_id);
+
+                database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
+                requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
+                database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
-                acceptid);
-
-        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
-        requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
-        database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
     }
 
     // [To push responded item to Real Time Database]
