@@ -4,14 +4,14 @@ public class UserProfile {
 
     public String name;
     public String phone;
-    public String requestCount;
+    public String request_count;
 
     public UserProfile() {
     }
 
-    public UserProfile(String name, String phone, String requestCount) {
+    public UserProfile(String name, String phone, String request_count) {
         this.name = name;
         this.phone = phone;
-        this.requestCount = requestCount;
+        this.request_count = request_count;
     }
 }
