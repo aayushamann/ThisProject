@@ -70,6 +70,7 @@ import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
 import com.saluchen.thisproject.Database.CurrentRequest;
+import com.saluchen.thisproject.Database.Response;
 import com.saluchen.thisproject.Database.UserProfile;
 import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
@@ -180,7 +181,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // [To push new request to Real time Database]
-    public void onNewRequest(String latitude, String longitude, String title, String details,
+    public void onAddRequest(String latitude, String longitude, String title, String details,
                                   String datetime, String acceptid) {
         final FirebaseUser user = mAuth.getCurrentUser();
         DatabaseReference database = mDatabase.getReference();
@@ -189,7 +190,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                requestCount = userProfile.requestCount;
+                requestCount = userProfile.request_count;
             }
 
             @Override
@@ -203,6 +204,22 @@ public class HomeActivity extends AppCompatActivity
         requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
         database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
     }
+
+    // [To push responded item to Real Time Database]
+    public void onSelectResponse(String requestUserID, String requestID, String lastLocation,
+                                 String status, String delay) {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = mDatabase.getReference();
+
+        Response response = new Response(lastLocation, status, delay);
+        database.child(Config.TABLE_RESPONSE).child(user.getUid()).child(requestUserID)
+                .child(requestID).setValue(response);
+
+        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(Config.REQUEST_COUNT)
+                .child(Config.REQUEST_ACCEPT_ID).setValue(user.getUid());
+    }
+
+
 
     public void dragMap(){
 

@@ -17,7 +17,9 @@ public class Config {
     // Database Configuration
     public static final String TABLE_USER = "user";
     public static final String TABLE_REQUEST = "request";
+    public static final String TABLE_RESPONSE = "response";
 
-    public static final String REQUEST_COUNT = "requestCount";
+    public static final String REQUEST_COUNT = "request_count";
+    public static final String REQUEST_ACCEPT_ID = "accept_id";
 
 }
