@@ -44,38 +44,57 @@
             android:id="@+id/timetext"/>
     </LinearLayout>
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
 
-    <Button
-        android:text="Call"
+        <ImageView
+            android:id="@+id/btn_call"
+            style="@style/action_button_bs"
+            android:layout_width="45dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="32dp"
+            android:layout_height="45dp"
+            android:background="@drawable/ic_call"/>
+
+        <ImageView
+            android:id="@+id/btn_whatsapp"
+            style="@style/action_button_bs"
+            android:layout_height="45dp"
+            android:layout_marginRight="32dp"
+            android:layout_width="45dp"
+            android:background="@drawable/ic_chat"/>
+
+        <ImageView
+            android:id="@+id/btn_gmap"
+            style="@style/action_button_bs"
+            android:layout_height="45dp"
+            android:layout_width="45dp"
+            android:layout_marginRight="32dp"
+            android:background="@drawable/ic_directions" />
+
+        <!--    <ImageView
+        android:id="@+id/btn_gmp"
         android:layout_width="wrap_content"
-        style="@style/action_button_bs"
-        android:id="@+id/btn_call"/>
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_directions" />-->
 
-    <Button
-        android:text="Chat"
-        android:layout_width="wrap_content"
-        style="@style/action_button_bs"
-        android:textAllCaps="false"
-        android:id="@+id/btn_whatsapp"/>
+        <!--<Button
+            android:id="@+id/respond_to_request"
+            style="@style/action_button_bs"
+            android:layout_width="wrap_content"
+            android:textSize="30dp"
+            android:text="Claim"/>-->
 
-    <Button
-        android:text="Route"
-        android:layout_width="wrap_content"
-        style="@style/action_button_bs"
-        android:id="@+id/btn_gmap"/>
-
-    <Button
-        android:text="Respond"
-        android:layout_width="wrap_content"
-        android:textColor="#D04D5B"
-        style="@style/action_button_bs"
-        android:id="@+id/respond_to_request"/>
+        <ImageView
+            android:id="@+id/respond_to_request"
+            style="@style/action_button_bs"
+            android:layout_height="45dp"
+            android:layout_width="45dp"
+            android:background="@drawable/ic_add" />
 
 
-</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

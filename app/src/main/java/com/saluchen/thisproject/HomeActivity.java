@@ -111,7 +111,8 @@ public class HomeActivity extends AppCompatActivity
     private GoogleMap mMap;
     private ClusterManager<MyItem> mClusterManager;
 
-    android.widget.Button btn_gmap,btn_call,btn_whatsapp,btn_setlocation;
+    android.widget.Button btn_setlocation;
+    android.widget.ImageView btn_gmap,btn_call,btn_whatsapp;
     android.support.design.widget.BottomSheetDialog request_dialog_bs,response_dialog_bs;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -614,9 +615,9 @@ public class HomeActivity extends AppCompatActivity
         request_dialog_bs.setCanceledOnTouchOutside(true);
         request_dialog_bs.setCancelable(true);
 
-        btn_whatsapp = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_whatsapp);
-        btn_call = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_call);
-        btn_gmap = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_gmap);
+        btn_whatsapp = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_whatsapp);
+        btn_call = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_call);
+        btn_gmap = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_gmap);
         titleText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
         //DetailText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
     }
