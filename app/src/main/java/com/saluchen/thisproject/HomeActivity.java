@@ -39,17 +39,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -81,12 +78,11 @@ import com.google.maps.android.MarkerManager;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
 import com.saluchen.thisproject.Database.CurrentRequest;
-
 import com.saluchen.thisproject.Database.Response;
 import com.saluchen.thisproject.Database.UserProfile;
 import com.saluchen.thisproject.models.CustomRenderer;
 import com.saluchen.thisproject.models.PlaceInfo;
-import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,6 +184,8 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        RetrieveAllRequests();
+
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
@@ -202,7 +200,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // [To push new request to Real time Database]
-
     public void onAddRequest(final String latitude, final String longitude, final String title,
                              final String details, final String datetime, final String accept_id) {
 
@@ -243,8 +240,29 @@ public class HomeActivity extends AppCompatActivity
                 .child(Config.REQUEST_ACCEPT_ID).setValue(user.getUid());
     }
 
-    public void dragMap(){
+    // [To retrieve all request data from Real Time Database]
+    public void RetrieveAllRequests() {
+        DatabaseReference database = mDatabase.getReference();
+        database.child(Config.TABLE_REQUEST).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
+                    for(DataSnapshot snapshot: requestSnapshot.getChildren()) {
+                        CurrentRequest currentRequest = snapshot.getValue(CurrentRequest.class);
+                        addItems(currentRequest.latitude, currentRequest.longitude,
+                                currentRequest.request_title, currentRequest.details);
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void dragMap(){
         mMap.clear();
         final BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation);
@@ -567,7 +585,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Add cluster items (markers) to the cluster manager.
 
-        addItems(latLng);
+//        addItems(latLng);
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
         Log.d(TAG,x.toString());
@@ -576,27 +594,32 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
     }
 
-    private void addItems(LatLng latLng) {
+    private void addItems(String latitude, String longitude, String title, String snippet) {
+
+        double lat = Float.parseFloat(latitude);
+        double lng = Float.parseFloat(longitude);
+        MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
+        mClusterManager.addItem(infoWindowItem);
 
         // Set some lat/lng coordinates to start with.
-        double lat = 26.0000000;
-        double lng = 82.0000000;
+//        double lat = 26.0000000;
+//        double lng = 82.0000000;
 
         //String title = "This is the title";
         //String snippet = "and this is the snippet.";
 
         // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 100; i++) {
-            double offset = i / 6000d;
-            lat = lat + offset;
-            lng = lng + offset;
-            String title = "This is the title";
-            String snippet = "and this is the snippet.";
-            // Create a cluster item for the marker and set the title and snippet using the constructor.
-            MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
-            // Add the cluster item (marker) to the cluster manager.
-            mClusterManager.addItem(infoWindowItem);
-        }
+//        for (int i = 0; i < 100; i++) {
+//            double offset = i / 6000d;
+//            lat = lat + offset;
+//            lng = lng + offset;
+//            String title = "This is the title";
+//            String snippet = "and this is the snippet.";
+//            // Create a cluster item for the marker and set the title and snippet using the constructor.
+//            MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
+//            // Add the cluster item (marker) to the cluster manager.
+//            mClusterManager.addItem(infoWindowItem);
+//        }
     }
 
     private GoogleMap getMap() {
