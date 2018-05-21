@@ -14,6 +14,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -128,6 +129,7 @@ public class HomeActivity extends AppCompatActivity
     private TextView request_text;
     private TextView respond_text;
     private TextView status_text;
+    TextView titleText;
 
     EditText radius_limit,time_limit;
     int radius,time;
@@ -190,6 +192,7 @@ public class HomeActivity extends AppCompatActivity
         mGps = (ImageView) findViewById(R.id.ic_gps);
         //mInfo = (ImageView) findViewById(R.id.place_info);
         //mPlacePicker = (ImageView) findViewById(R.id.place_picker);
+        init_request_modal_bottomsheet();
         getLocationPermission();
         //displayLocationSettingsRequest();
         //initMap();
@@ -327,7 +330,7 @@ public class HomeActivity extends AppCompatActivity
                     case Activity.RESULT_OK:
                         Log.d("XXXXX","OKAY");
                         Log.i(TAG, "User agreed to make required location settings changes.");
-                        getDeviceLocation();
+                        getDeviceLocation(false);
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.d("XXXXX","CANCELLED");
@@ -366,7 +369,6 @@ public class HomeActivity extends AppCompatActivity
                         switch (item.getItemId()) {
                             case R.id.request_action:
                                 typ = 1;
-                                init_request_modal_bottomsheet();
                                 Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
                                 startActivityForResult(new Intent(HomeActivity.this,
                                         RequestDialog.class),2);
@@ -634,6 +636,12 @@ public class HomeActivity extends AppCompatActivity
         request_dialog_bs.setContentView(modalbottomsheet);
         request_dialog_bs.setCanceledOnTouchOutside(true);
         request_dialog_bs.setCancelable(true);
+
+        btn_whatsapp = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_whatsapp);
+        btn_call = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_call);
+        btn_gmap = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_gmap);
+        titleText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
+        //DetailText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
     }
 
     public void init_response_modal_bottomsheet() {
@@ -698,7 +706,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked gps icon");
-                getDeviceLocation();
+                getDeviceLocation(false);
             }
         });
 
@@ -760,7 +768,7 @@ public class HomeActivity extends AppCompatActivity
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         Log.i(TAG, "All location settings are satisfied.");
-                        getDeviceLocation();
+                        getDeviceLocation(false);
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
@@ -781,7 +789,7 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-    private void getDeviceLocation(){
+    private void getDeviceLocation(final boolean just_checking){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -798,11 +806,20 @@ public class HomeActivity extends AppCompatActivity
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
                             if(currentLocation!=null) {
-                                mMap.clear();
-                                setUpCircle(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+
+                                if(just_checking) {
+                                    Log.d("JUST_CHECKED_LOCATION",currentLocation.toString());
+
+                                    //updateLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+                                }
+                                else {
+                                    mMap.clear();
+                                    setUpCircle(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                                 /*moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM,
                                         "My Location", noPlaceInfo);*/
+                                }
                             }
                             else{
                                 Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
@@ -1041,6 +1058,7 @@ public class HomeActivity extends AppCompatActivity
             request_dialog_bs.show();
         }
 
+        titleText.setText(task_title);
         btn_whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1076,5 +1094,31 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    Handler h = new Handler();
+    int delay = 5*1000; //1 second=1000 milisecond, 15*1000=15seconds
+    Runnable runnable;
+    @Override
+    protected void onResume() {
+        //start handler as activity become visible
+
+        h.postDelayed(new Runnable() {
+            public void run() {
+                getDeviceLocation(true);
+
+                runnable=this;
+
+                h.postDelayed(runnable, delay);
+            }
+        }, delay);
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        h.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
     }
 }
