@@ -87,6 +87,7 @@ import com.saluchen.thisproject.models.PlaceInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -588,7 +589,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Add cluster items (markers) to the cluster manager.
 
-//        addItems(latLng);
+        addDefaultItems();
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
         Log.d(TAG,x.toString());
@@ -597,32 +598,35 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
     }
 
+    private void addDefaultItems()
+    {
+         //Set some lat/lng coordinates to start with.
+        double lat = 26.0000000;
+        double lng = 82.0000000;
+
+        String title = "This is the title";
+        String snippet = "and this is the snippet.";
+
+         //Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 100; i++) {
+            double offset = i / 6000d;
+            lat = lat + offset;
+            lng = lng + offset;
+            //String title = "This is the title";
+            //String snippet = "and this is the snippet.";
+            // Create a cluster item for the marker and set the title and snippet using the constructor.
+            MyItem infoWindowItem = new MyItem(lat, lng, "This is the title", "and this is the snippet");
+            // Add the cluster item (marker) to the cluster manager.
+            mClusterManager.addItem(infoWindowItem);
+        }
+    }
+
     private void addItems(String latitude, String longitude, String title, String snippet) {
 
         double lat = Float.parseFloat(latitude);
         double lng = Float.parseFloat(longitude);
         MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
         mClusterManager.addItem(infoWindowItem);
-
-        // Set some lat/lng coordinates to start with.
-//        double lat = 26.0000000;
-//        double lng = 82.0000000;
-
-        //String title = "This is the title";
-        //String snippet = "and this is the snippet.";
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-//        for (int i = 0; i < 100; i++) {
-//            double offset = i / 6000d;
-//            lat = lat + offset;
-//            lng = lng + offset;
-//            String title = "This is the title";
-//            String snippet = "and this is the snippet.";
-//            // Create a cluster item for the marker and set the title and snippet using the constructor.
-//            MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
-//            // Add the cluster item (marker) to the cluster manager.
-//            mClusterManager.addItem(infoWindowItem);
-//        }
     }
 
     private GoogleMap getMap() {
