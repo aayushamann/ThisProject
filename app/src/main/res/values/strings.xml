@@ -73,5 +73,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!--  Navigation Drawer  -->
+    <string name="nav_menu_home">Home</string>
+    <string name="nav_menu_profile">Profile</string>
+    <string name="nav_menu_request_history">Your Requests</string>
+    <string name="nav_menu_response_history">Your Responses</string>
+    <string name="nav_menu_sign_out">Sign Out</string>
+    <string name="nav_menu_share">Share</string>
+
 </resources>
 

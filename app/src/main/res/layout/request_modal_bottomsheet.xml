@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="ITEM TITLE"
+            android:text="Maggi"
             android:textSize="20dp"
             android:id="@+id/titleText"/>
     </LinearLayout>
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="ITEM DETAIL"
+            android:text="5 Packets of Rs.10 each"
             android:textSize="20dp"
             android:id="@+id/DetailText"/>
     </LinearLayout>
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="ITEM TIME_LIMIT"
+            android:text="8 hours"
             android:textSize="20dp"
             android:id="@+id/timetext"/>
     </LinearLayout>

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -208,6 +210,14 @@ public class HomeActivity extends AppCompatActivity
 
         final FirebaseUser user = mAuth.getCurrentUser();
         final DatabaseReference database = mDatabase.getReference();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Request Added").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        final AlertDialog dialog = builder.create();
 
         database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -221,6 +231,7 @@ public class HomeActivity extends AppCompatActivity
                 database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
                 requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
                 database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
+                dialog.show();
             }
 
             @Override
@@ -264,6 +275,8 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
+
+
 
     public void dragMap(){
         mMap.clear();
@@ -434,18 +447,21 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_home) {
+
+        } else if (id == R.id.nav_profile) {
             startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_request_history) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_response_history) {
 
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Download \"This Project\" android app " +
+                    "and start earning now.");
+            startActivity(shareIntent);
 
         } else if (id == R.id.nav_sign_out) {
             mAuth.signOut();
