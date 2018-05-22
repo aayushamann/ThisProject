@@ -51,8 +51,8 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif"
             android:focusable="false"
+            android:fontFamily="sans-serif"
             android:hint="@string/request_expected_date"
             android:inputType="date" />
 
@@ -64,13 +64,13 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif"
             android:focusable="false"
-            android:onClick="showTimePickerDialog"
+            android:fontFamily="sans-serif"
             android:hint="@string/request_expected_time"
             android:inputType="time" />
 
         <Button
+            android:id="@+id/drop_location_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -79,7 +79,7 @@
             android:layout_marginTop="4dp"
             android:background="@color/colorBlack"
             android:text="@string/request_drop_location"
-            android:textColor="@color/colorGreenLight"
-            android:id="@+id/drop_location_button"/>
+            android:onClick="onRequestDropLocationButton"
+            android:textColor="@color/colorGreenLight" />
     </LinearLayout>
 </ScrollView>

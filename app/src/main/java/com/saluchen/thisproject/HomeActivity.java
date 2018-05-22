@@ -37,6 +37,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -110,8 +112,8 @@ public class HomeActivity extends AppCompatActivity
     private ClusterManager<MyItem> mClusterManager;
 
     android.widget.Button btn_setlocation;
-    android.widget.ImageView btn_gmap,btn_call,btn_whatsapp;
-    android.support.design.widget.BottomSheetDialog request_dialog_bs,response_dialog_bs;
+    android.widget.ImageView btn_gmap, btn_call, btn_whatsapp;
+    android.support.design.widget.BottomSheetDialog request_dialog_bs, response_dialog_bs;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlaceAutoCompleteAdapter mPlaceAutocompleteAdapter;
@@ -129,16 +131,15 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseDatabase mDatabase;
 
     private ImageView dehaze;
-    private TextView request_text;
-    private TextView respond_text;
-    private TextView status_text;
     TextView titleText;
 
-    EditText radius_limit,time_limit;
-    int radius,time;
+    EditText radius_limit, time_limit;
+    int radius, time;
 
+    private ProgressBar progressBar;
     private String requestCount;
     SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferencesCredentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,8 +148,14 @@ public class HomeActivity extends AppCompatActivity
 
         setBottomNavBar();
 
-        dehaze = (ImageView) findViewById(R.id.ic_dehaze);
+        progressBar = findViewById(R.id.home_progress_bar);
 
+        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
+                Context.MODE_PRIVATE);
+        sharedPreferencesCredentials = getSharedPreferences(Config.sharedPrefsCreds,
+                Context.MODE_PRIVATE);
+
+        dehaze = (ImageView) findViewById(R.id.ic_dehaze);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -175,13 +182,18 @@ public class HomeActivity extends AppCompatActivity
         final TextView navHeaderText1 = headerView.findViewById(R.id.nav_header_text1);
         final TextView navHeaderText2 = headerView.findViewById(R.id.nav_header_text2);
 
+        progressBar.setVisibility(View.VISIBLE);
+
         database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 navHeaderText1.setText(userProfile.name);
                 navHeaderText2.setText(userProfile.phone);
-//                progressBar.setVisibility(View.GONE);
+                SharedPreferences.Editor editor = sharedPreferencesCredentials.edit();
+                editor.putString(Config.CURRENT_NAME, userProfile.name);
+                editor.putString(Config.CURRENT_PHONE, userProfile.phone);
+                editor.apply();
             }
 
             @Override
@@ -193,242 +205,8 @@ public class HomeActivity extends AppCompatActivity
 
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
-        //mInfo = (ImageView) findViewById(R.id.place_info);
-        //mPlacePicker = (ImageView) findViewById(R.id.place_picker);
         init_request_modal_bottomsheet();
         getLocationPermission();
-        //displayLocationSettingsRequest();
-        //initMap();
-        //setUpClusterer();
-
-        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
-                Context.MODE_PRIVATE);
-    }
-
-    // [To push new request to Real time Database]
-    public void onAddRequest(final String latitude, final String longitude, final String title,
-                             final String details, final String datetime, final String accept_id) {
-
-        final FirebaseUser user = mAuth.getCurrentUser();
-        final DatabaseReference database = mDatabase.getReference();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Request Added").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        final AlertDialog dialog = builder.create();
-
-        database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                requestCount = userProfile.request_count;
-                Log.d("RequestCount: ", requestCount);
-                CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
-                        accept_id);
-
-                database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
-                requestCount = String.valueOf(Integer.parseInt(requestCount)+1);
-                database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
-                dialog.show();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    // [To push responded item to Real Time Database]
-    public void onSelectResponse(String requestUserID, String requestID, String lastLocation,
-                                 String status, String delay) {
-        final FirebaseUser user = mAuth.getCurrentUser();
-        DatabaseReference database = mDatabase.getReference();
-
-        Response response = new Response(lastLocation, status, delay);
-        database.child(Config.TABLE_RESPONSE).child(user.getUid()).child(requestUserID)
-                .child(requestID).setValue(response);
-
-        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(Config.REQUEST_COUNT)
-                .child(Config.REQUEST_ACCEPT_ID).setValue(user.getUid());
-    }
-
-    // [To retrieve all request data from Real Time Database]
-    public void RetrieveAllRequests() {
-        DatabaseReference database = mDatabase.getReference();
-        database.child(Config.TABLE_REQUEST).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
-                    for(DataSnapshot snapshot: requestSnapshot.getChildren()) {
-                        CurrentRequest currentRequest = snapshot.getValue(CurrentRequest.class);
-                        addItems(currentRequest.latitude, currentRequest.longitude,
-                                currentRequest.request_title, currentRequest.details);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-
-
-    public void dragMap(){
-        mMap.clear();
-        final BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-
-        bottomNavigationView.setVisibility(View.GONE);
-        final Button done_button = (Button)findViewById(R.id.done_button);
-        done_button.setVisibility(View.VISIBLE);
-
-        ImageView iv = (ImageView)findViewById(R.id.imageMarker);
-        iv.setVisibility(View.VISIBLE);
-        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                //get latlng at the center by calling
-                LatLng midLatLng = mMap.getCameraPosition().target;
-                Log.d(TAG,midLatLng.toString());
-            }
-        });
-
-        done_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG,"DONE CLICKED");
-                LatLng midLatLng = mMap.getCameraPosition().target;
-                Double midlat = midLatLng.latitude;
-                Double midlng = midLatLng.longitude;
-                String midlatt = midlat.toString();
-                String midlngg = midlng.toString();
-
-                if(typ==1) {
-                    Log.d(TAG,"Made a successful request");
-                    onAddRequest(midlatt, midlngg, itemName, itemDetails, date, "0");
-                }
-                else if(typ==2)
-                {
-                    Log.d("radius",String.valueOf(radius));
-                    Log.d(TAG,"Made a successful response");
-                }
-
-                Log.d(TAG,midLatLng.toString());
-                done_button.setVisibility(View.GONE);
-                bottomNavigationView.setVisibility(View.VISIBLE);
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
-            }
-        });
-    }
-
-    String itemName,itemDetails,date;
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        Log.d("XXXXX","AA raha hai");
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode!=1)
-        {
-
-        switch (requestCode) {
-            // Check for the integer request code originally supplied to startResolutionForResult().
-            case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        Log.d("XXXXX", "OKAY");
-                        Log.i(TAG, "User agreed to make required location settings changes.");
-                        getDeviceLocation(false);
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        Log.d("XXXXX", "CANCELLED");
-                        Log.i(TAG, "User chose not to make required location settings changes.");
-                        break;
-                }
-                break;
-
-            case 2:
-                Bundle extras = data.getExtras();
-                for (String key : extras.keySet()) {
-                    Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
-                }
-
-                itemName = extras.getString("itemName");
-                itemDetails = extras.getString("itemDetails");
-                date = extras.getString("expectedDate");
-                typ = 1;
-                dragMap();
-        }
-    }
-    }
-
-    private void setBottomNavBar(){
-        request_text = (TextView) findViewById(R.id.request_text);
-        respond_text = (TextView) findViewById(R.id.respond_text);
-        status_text = (TextView) findViewById(R.id.status_text);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.request_action:
-                                typ = 1;
-                                Toast.makeText(HomeActivity.this,"Set Request Location",Toast.LENGTH_SHORT).show();
-                                startActivityForResult(new Intent(HomeActivity.this,
-                                        RequestDialog.class),2);
-                                break;
-
-                            case R.id.respond_action:
-                                typ = 2;
-                                init_response_modal_bottomsheet();
-                                response_dialog_bs.show();
-                                //mMap.clear();
-                                //dragMap();
-
-                                btn_setlocation.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Log.d("RADIUS LIMIT",radius_limit.getText().toString());
-/*                                        if(radius_limit!=null && time_limit!=null) {
-                                            radius = Integer.parseInt(radius_limit.getText().toString());
-                                            time = Integer.parseInt(time_limit.getText().toString());
-                                        }*/
-
-                                        if(response_dialog_bs.isShowing()){
-                                            response_dialog_bs.dismiss();
-                                        }
-                                        dragMap();
-                                    }
-                                });
-
-                                Toast.makeText(HomeActivity.this,"Set Response Location",Toast.LENGTH_SHORT).show();
-                                //startActivity(new Intent(HomeActivity.this,
-                                //      ResponseDialog.class));
-                                break;
-
-                            case R.id.status_action:
-                                typ = 3;
-                                mMap.clear();
-                                dragMap();
-                                Toast.makeText(HomeActivity.this,"Status",Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        return false;
-                    }
-                });
     }
 
     @Override
@@ -438,7 +216,10 @@ public class HomeActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             String item = sharedPreferences.getString(Config.itemName, "");
-            if (item.equals("")) {
+            if (item.isEmpty()) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
                 super.onBackPressed();
             } else {
                 startActivity(new Intent(HomeActivity.this, RequestDialog.class));
@@ -469,6 +250,12 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_sign_out) {
             mAuth.signOut();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+            SharedPreferences.Editor editor1 = sharedPreferencesCredentials.edit();
+            editor1.clear();
+            editor1.apply();
             startActivity(new Intent(HomeActivity.this,
                     SignInActivity.class));
             finish();
@@ -479,32 +266,269 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    private void getLocationPermission(){
+
+    // [To push new request to Real time Database]
+    public void onAddRequest(final String latitude, final String longitude, final String title,
+                             final String details, final String datetime, final String accept_id) {
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        final FirebaseUser user = mAuth.getCurrentUser();
+        final DatabaseReference database = mDatabase.getReference();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Request Added").setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        final AlertDialog dialog = builder.create();
+
+        database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                requestCount = userProfile.request_count;
+                Log.d("RequestCount: ", requestCount);
+                CurrentRequest request = new CurrentRequest(latitude, longitude, title, details, datetime,
+                        accept_id);
+
+                database.child(Config.TABLE_REQUEST).child(user.getUid()).child(requestCount).setValue(request);
+                requestCount = String.valueOf(Integer.parseInt(requestCount) + 1);
+                database.child(Config.TABLE_USER).child(user.getUid()).child(Config.REQUEST_COUNT).setValue(requestCount);
+                progressBar.setVisibility(View.GONE);
+                dialog.show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    // [To push responded item to Real Time Database]
+    public void onSelectResponse(String requestUserID, String requestID, String lastLocation,
+                                 String status, String delay) {
+        final FirebaseUser user = mAuth.getCurrentUser();
+        DatabaseReference database = mDatabase.getReference();
+
+        Response response = new Response(lastLocation, status, delay);
+        database.child(Config.TABLE_RESPONSE).child(user.getUid()).child(requestUserID)
+                .child(requestID).setValue(response);
+
+        database.child(Config.TABLE_REQUEST).child(user.getUid()).child(Config.REQUEST_COUNT)
+                .child(Config.REQUEST_ACCEPT_ID).setValue(user.getUid());
+    }
+
+    // [To retrieve all request data from Real Time Database]
+    public void RetrieveAllRequests() {
+        DatabaseReference database = mDatabase.getReference();
+        database.child(Config.TABLE_REQUEST).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot requestSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot snapshot : requestSnapshot.getChildren()) {
+                        CurrentRequest currentRequest = snapshot.getValue(CurrentRequest.class);
+                        addItems(currentRequest.latitude, currentRequest.longitude,
+                                currentRequest.request_title, currentRequest.details);
+                    }
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void dragMap() {
+        mMap.clear();
+        final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setVisibility(View.GONE);
+
+        final LinearLayout linearLayout = findViewById(R.id.request_button_background);
+        final Button request_done_button = findViewById(R.id.request_done_button);
+        final Button request_cancel_button = findViewById(R.id.request_cancel_button);
+        request_done_button.setVisibility(View.VISIBLE);
+        request_cancel_button.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
+
+        ImageView iv = findViewById(R.id.imageMarker);
+        iv.setVisibility(View.VISIBLE);
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                //get latlng at the center by calling
+                LatLng midLatLng = mMap.getCameraPosition().target;
+                Log.d(TAG, midLatLng.toString());
+            }
+        });
+
+        request_done_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "DONE CLICKED");
+                LatLng midLatLng = mMap.getCameraPosition().target;
+                Double midlat = midLatLng.latitude;
+                Double midlng = midLatLng.longitude;
+                String midlatt = midlat.toString();
+                String midlngg = midlng.toString();
+
+                if (typ == 1) {
+                    Log.d(TAG, "Made a successful request");
+                    String dateTime = itemDate + " " + itemTime;
+                    onAddRequest(midlatt, midlngg, itemName, itemDetails, dateTime, "0");
+                } else if (typ == 2) {
+                    Log.d("radius", String.valueOf(radius));
+                    Log.d(TAG, "Made a successful response");
+                }
+
+                Log.d(TAG, midLatLng.toString());
+                request_done_button.setVisibility(View.GONE);
+                linearLayout.setVisibility(View.GONE);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+            }
+        });
+
+        request_cancel_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+                request_cancel_button.setVisibility(View.GONE);
+                linearLayout.setVisibility(View.GONE);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    String itemName, itemDetails, itemDate, itemTime;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != 1) {
+            switch (requestCode) {
+                // Check for the integer request code originally supplied to startResolutionForResult().
+                case REQUEST_CHECK_SETTINGS:
+                    switch (resultCode) {
+                        case Activity.RESULT_OK:
+                            Log.d("XXXXX", "OKAY");
+                            Log.i(TAG, "User agreed to make required location settings changes.");
+                            getDeviceLocation(false);
+                            break;
+                        case Activity.RESULT_CANCELED:
+                            Log.d("XXXXX", "CANCELLED");
+                            Log.i(TAG, "User chose not to make required location settings changes.");
+                            break;
+                    }
+                    break;
+
+                case 2:
+                    Bundle extras = data.getExtras();
+                    for (String key : extras.keySet()) {
+                        Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
+                    }
+
+                    itemName = extras.getString(Config.itemName);
+                    itemDetails = extras.getString(Config.itemDetail);
+                    itemDate = extras.getString(Config.expectedDate);
+                    itemTime = extras.getString(Config.expectedTime);
+                    typ = 1;
+                    dragMap();
+            }
+        }
+    }
+
+    private void setBottomNavBar() {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.request_action:
+                                typ = 1;
+                                Toast.makeText(HomeActivity.this, "Set Request Location", Toast.LENGTH_SHORT).show();
+                                startActivityForResult(new Intent(HomeActivity.this,
+                                        RequestDialog.class), 2);
+                                break;
+
+                            case R.id.respond_action:
+                                typ = 2;
+                                init_response_modal_bottomsheet();
+                                response_dialog_bs.show();
+
+                                btn_setlocation.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("RADIUS LIMIT", radius_limit.getText().toString());
+                                        String radius = radius_limit.getText().toString();
+                                        String time = time_limit.getText().toString();
+                                        if (radius.isEmpty()) {
+                                            radius_limit.setError("Required");
+                                        } else if (time.isEmpty()) {
+                                            time_limit.setError("Required");
+                                        } else {
+                                            if (response_dialog_bs.isShowing()) {
+                                                response_dialog_bs.dismiss();
+                                            }
+                                            dragMap();
+                                        }
+                                    }
+                                });
+
+                                Toast.makeText(HomeActivity.this, "Set Response Location", Toast.LENGTH_SHORT).show();
+                                //startActivity(new Intent(HomeActivity.this,
+                                //      ResponseDialog.class));
+                                break;
+
+                            case R.id.status_action:
+                                typ = 3;
+                                mMap.clear();
+                                dragMap();
+                                Toast.makeText(HomeActivity.this, "Status", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+    }
+
+
+    private void getLocationPermission() {
         initMap();
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {android.Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
                 displayLocationSettingsRequest();
 
-            }else{
+            } else {
                 ActivityCompat.requestPermissions(this,
                         permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
-        }else{
+        } else {
             ActivityCompat.requestPermissions(this,
                     permissions,
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
-    private void initMap(){
+    private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(HomeActivity.this);
@@ -531,7 +555,7 @@ public class HomeActivity extends AppCompatActivity
          */
 
         }
-        mMap.setPadding(0,0,0,100);
+        mMap.setPadding(0, 0, 0, 100);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.getUiSettings().setCompassEnabled(false);
@@ -541,8 +565,8 @@ public class HomeActivity extends AppCompatActivity
         init();
     }
 
-    private void setUpCircle(LatLng latLng){
-        Log.d(TAG,"SETTING UP CIRCLE");
+    private void setUpCircle(LatLng latLng) {
+        Log.d(TAG, "SETTING UP CIRCLE");
         mMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(1000)
@@ -551,7 +575,7 @@ public class HomeActivity extends AppCompatActivity
                 .fillColor(Color.argb(128, 135, 206, 250))
                 .clickable(true));
 
-        LatLngBounds bounds = toBounds(latLng,1000);
+        LatLngBounds bounds = toBounds(latLng, 1000);
         final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 10);
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -561,8 +585,8 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        Log.d(TAG,bounds.northeast.toString());
-        Log.d(TAG,bounds.southwest.toString());
+        Log.d(TAG, bounds.northeast.toString());
+        Log.d(TAG, bounds.southwest.toString());
 
         // mMap.addMarker(new MarkerOptions().position(bounds.northeast).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
         //mMap.addMarker(new MarkerOptions().position(bounds.southwest).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
@@ -591,7 +615,7 @@ public class HomeActivity extends AppCompatActivity
         // (Activity extends context, so we can pass 'this' in the constructor.)
 
         mClusterManager = new ClusterManager<MyItem>(this, getMap());
-        final CustomRenderer renderer = new CustomRenderer(this,mMap,mClusterManager);
+        final CustomRenderer renderer = new CustomRenderer(this, mMap, mClusterManager);
         mClusterManager.setRenderer(renderer);
 
         // Point the map's listeners at the listeners implemented by the cluster
@@ -610,22 +634,21 @@ public class HomeActivity extends AppCompatActivity
         addDefaultItems();
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
-        Log.d(TAG,x.toString());
+        Log.d(TAG, x.toString());
         Toast.makeText(this, x.getMarkers().toString(), Toast.LENGTH_SHORT).show();
         MarkerManager.Collection y = mClusterManager.getMarkerCollection();
-        Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, y.getMarkers().toString(), Toast.LENGTH_SHORT).show();
     }
 
-    private void addDefaultItems()
-    {
-         //Set some lat/lng coordinates to start with.
+    private void addDefaultItems() {
+        //Set some lat/lng coordinates to start with.
         double lat = 26.0000000;
         double lng = 82.0000000;
 
         String title = "This is the title";
         String snippet = "and this is the snippet.";
 
-         //Add ten cluster items in close proximity, for purposes of this example.
+        //Add ten cluster items in close proximity, for purposes of this example.
         for (int i = 0; i < 100; i++) {
             double offset = i / 6000d;
             lat = lat + offset;
@@ -660,10 +683,10 @@ public class HomeActivity extends AppCompatActivity
         request_dialog_bs.setCanceledOnTouchOutside(true);
         request_dialog_bs.setCancelable(true);
 
-        btn_whatsapp = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_whatsapp);
-        btn_call = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_call);
-        btn_gmap = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_gmap);
-        titleText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
+        btn_whatsapp = (android.widget.ImageView) modalbottomsheet.findViewById(R.id.btn_whatsapp);
+        btn_call = (android.widget.ImageView) modalbottomsheet.findViewById(R.id.btn_call);
+        btn_gmap = (android.widget.ImageView) modalbottomsheet.findViewById(R.id.btn_gmap);
+        titleText = (android.widget.TextView) modalbottomsheet.findViewById(R.id.titleText);
         //DetailText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
     }
 
@@ -687,9 +710,8 @@ public class HomeActivity extends AppCompatActivity
         return new LatLngBounds(southwestCorner, northeastCorner);
     }
 
-    private void init(){
+    private void init() {
         Log.d(TAG, "init: initializing");
-
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -703,20 +725,18 @@ public class HomeActivity extends AppCompatActivity
                 LAT_LNG_BOUNDS, null);
 
         mSearchText.setAdapter(mPlaceAutocompleteAdapter);
-
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-
-                if(keyEvent == null) {
+                if (keyEvent == null) {
                     Toast.makeText(HomeActivity.this, "Choose Appropriate Location", Toast.LENGTH_SHORT).show();
                     return false;
                 }
 
-                if(keyEvent!=null && actionId == EditorInfo.IME_ACTION_SEARCH
+                if (keyEvent != null && actionId == EditorInfo.IME_ACTION_SEARCH
                         || actionId == EditorInfo.IME_ACTION_DONE
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
 
                     //execute our method for searching
                     geoLocate();
@@ -732,44 +752,10 @@ public class HomeActivity extends AppCompatActivity
                 getDeviceLocation(false);
             }
         });
-
-/*      mInfo.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Log.d(TAG, "onClick: clicked place info");
-            try{
-                if(mMarker.isInfoWindowShown()){
-                    mMarker.hideInfoWindow();
-                }else{
-                    Log.d(TAG, "onClick: place info: " + mPlace.toString());
-                    mMarker.showInfoWindow();
-                }
-            }catch (NullPointerException e){
-                Log.e(TAG, "onClick: NullPointerException: " + e.getMessage() );
-            }
-        }
-    });
-
-    mPlacePicker.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-            try {
-                startActivityForResult(builder.build(MapActivity.this), PLACE_PICKER_REQUEST);
-            } catch (GooglePlayServicesRepairableException e) {
-                Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage() );
-            } catch (GooglePlayServicesNotAvailableException e) {
-                Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage() );
-            }
-        }
-    });*/
-
         hideSoftKeyboard();
     }
 
-    public void displayLocationSettingsRequest(){
+    public void displayLocationSettingsRequest() {
         Log.i(TAG, "DIIIIIIIIISPLAY.");
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).build();
@@ -812,65 +798,62 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-    private void getDeviceLocation(final boolean just_checking){
+    private void getDeviceLocation(final boolean just_checking) {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        try{
-            if(mLocationPermissionsGranted){
+        try {
+            if (mLocationPermissionsGranted) {
 
                 final Task location = mFusedLocationProviderClient.getLastLocation();
 
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             Location currentLocation = (Location) task.getResult();
-                            if(currentLocation!=null) {
+                            if (currentLocation != null) {
 
-                                if(just_checking) {
-                                    Log.d("JUST_CHECKED_LOCATION",currentLocation.toString());
+                                if (just_checking) {
+                                    Log.d("JUST_CHECKED_LOCATION", currentLocation.toString());
 
                                     //updateLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
 
-                                }
-                                else {
+                                } else {
                                     //mMap.clear();
                                     setUpCircle(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                                 /*moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM,
                                         "My Location", noPlaceInfo);*/
                                 }
-                            }
-                            else{
+                            } else {
                                 Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
                             }
 
-                        }else{
+                        } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(HomeActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
-        }catch (SecurityException e){
+        } catch (SecurityException e) {
             Toast.makeText(HomeActivity.this, "Error", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
-        }
-        catch (NullPointerException e){
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        } catch (NullPointerException e) {
             Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage() );
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title, PlaceInfo placeInfo){
-        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
+    private void moveCamera(LatLng latLng, float zoom, String title, PlaceInfo placeInfo) {
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         //mMap.clear();
-        if(placeInfo != null){
-            try{
+        if (placeInfo != null) {
+            try {
                 Toast.makeText(this, "PlaceInfo Wala", Toast.LENGTH_SHORT).show();
                 //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapActivity.this));
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
@@ -885,14 +868,14 @@ public class HomeActivity extends AppCompatActivity
 
                 mMarker = mMap.addMarker(options);
 
-            }catch (NullPointerException e){
-                Log.e(TAG, "moveCamera: NullPointerException: " + e.getMessage() );
+            } catch (NullPointerException e) {
+                Log.e(TAG, "moveCamera: NullPointerException: " + e.getMessage());
             }
-        }else{
+        } else {
             Toast.makeText(this, "No PlaceInfo", Toast.LENGTH_SHORT).show();
             //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapActivity.this));
             String snippet = "";
-            if(!title.equals("My Location")){
+            if (!title.equals("My Location")) {
                 Toast.makeText(this, "Not my location", Toast.LENGTH_SHORT).show();
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
@@ -901,8 +884,7 @@ public class HomeActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                 mMarker = mMap.addMarker(options);
 
-            }
-            else{
+            } else {
                 Toast.makeText(this, "My location", Toast.LENGTH_SHORT).show();
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
@@ -912,34 +894,32 @@ public class HomeActivity extends AppCompatActivity
                 mMap.addMarker(options);
             }
         }
-
         hideSoftKeyboard();
     }
 
-    private void geoLocate(){
+    private void geoLocate() {
         Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = mSearchText.getText().toString();
 
         Geocoder geocoder = new Geocoder(HomeActivity.this);
         List<Address> list = new ArrayList<>();
-        try{
+        try {
             list = geocoder.getFromLocationName(searchString, 1);
-        }catch (IOException e){
-            Log.e(TAG, "geoLocate: IOException: " + e.getMessage() );
+        } catch (IOException e) {
+            Log.e(TAG, "geoLocate: IOException: " + e.getMessage());
         }
 
-        if(list.size() > 0){
+        if (list.size() > 0) {
             Address address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
             Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
-                    address.getAddressLine(0),noPlaceInfo);
-        }
-        else{
-            Toast.makeText(this, "Location Unavailable",Toast.LENGTH_SHORT).show();
+                    address.getAddressLine(0), noPlaceInfo);
+        } else {
+            Toast.makeText(this, "Location Unavailable", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -957,7 +937,7 @@ public class HomeActivity extends AppCompatActivity
         }
     };
 
-    private void hideSoftKeyboard(){
+    private void hideSoftKeyboard() {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
@@ -965,14 +945,14 @@ public class HomeActivity extends AppCompatActivity
     private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback = new ResultCallback<PlaceBuffer>() {
         @Override
         public void onResult(@NonNull PlaceBuffer places) {
-            if(!places.getStatus().isSuccess()){
+            if (!places.getStatus().isSuccess()) {
                 Log.d(TAG, "onResult: Place query did not complete successfully: " + places.getStatus().toString());
                 places.release();
                 return;
             }
             final Place place = places.get(0);
 
-            try{
+            try {
                 mPlace = new PlaceInfo();
                 mPlace.setName(place.getName().toString());
                 Log.d(TAG, "onResult: name: " + place.getName());
@@ -992,33 +972,32 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(TAG, "onResult: website uri: " + place.getWebsiteUri());
                 Log.d(TAG, "onResult: place: " + mPlace.toString());
 
-            }catch (NullPointerException e){
-                Log.e(TAG, "onResult: NullPointerException: " + e.getMessage() );
+            } catch (NullPointerException e) {
+                Log.e(TAG, "onResult: NullPointerException: " + e.getMessage());
             }
 
             moveCamera(new LatLng(place.getViewport().getCenter().latitude,
-                    place.getViewport().getCenter().longitude),DEFAULT_ZOOM,noTitle, mPlace);
+                    place.getViewport().getCenter().longitude), DEFAULT_ZOOM, noTitle, mPlace);
 
             places.release();
         }
     };
 
-    public boolean isServicesOK(){
+    public boolean isServicesOK() {
         Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(HomeActivity.this);
 
-        if(available == ConnectionResult.SUCCESS){
+        if (available == ConnectionResult.SUCCESS) {
             //everything is fine and the user can make map requests
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             //an error occured but we can resolve it
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(HomeActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
+        } else {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -1074,10 +1053,9 @@ public class HomeActivity extends AppCompatActivity
         final double lng = item.getPosition().longitude;
         final String task_title = item.getTitle();
 
-        if(request_dialog_bs.isShowing()){
+        if (request_dialog_bs.isShowing()) {
             request_dialog_bs.dismiss();
-        }
-        else{
+        } else {
             request_dialog_bs.show();
         }
 
@@ -1085,7 +1063,7 @@ public class HomeActivity extends AppCompatActivity
         btn_whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+"7052469479"));
+                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + "7052469479"));
                 intent.setPackage("com.whatsapp");
                 startActivity(intent);
             }
@@ -1107,35 +1085,30 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
-
         Log.d(TAG, "onClusterItemInfoWindowClick");
         // Does nothing, but you could go into the user's profile page, for example.
-        Toast.makeText(HomeActivity.this, item.getPosition()+"onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
+        Toast.makeText(HomeActivity.this, item.getPosition() + "onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
     }
 
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     Handler h = new Handler();
-    int delay = 5*1000; //1 second=1000 milisecond, 15*1000=15seconds
+    int delay = 5 * 1000; //1 second=1000 milisecond, 15*1000=15seconds
     Runnable runnable;
+
     @Override
     protected void onResume() {
         //start handler as activity become visible
-
         h.postDelayed(new Runnable() {
             public void run() {
                 getDeviceLocation(true);
-
-                runnable=this;
-
+                runnable = this;
                 h.postDelayed(runnable, delay);
             }
         }, delay);
-
         super.onResume();
     }
 

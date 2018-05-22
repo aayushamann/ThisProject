@@ -42,7 +42,7 @@ public class SignInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         progressBar = findViewById(R.id.sign_in_progress_bar);
-        sharedPreferences = getSharedPreferences(Config.sharedPrefs,
+        sharedPreferences = getSharedPreferences(Config.sharedPrefsCreds,
                 Context.MODE_PRIVATE);
     }
 

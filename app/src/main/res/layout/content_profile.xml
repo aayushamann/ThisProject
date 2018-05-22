@@ -191,9 +191,9 @@
             android:layout_toStartOf="@id/profile_password_edit_image"
             android:focusable="false"
             android:includeFontPadding="true"
-            android:text="@string/profile_password_text"
             android:inputType="textPassword"
-            android:paddingTop="24dp" />
+            android:paddingTop="24dp"
+            android:text="@string/profile_password_text" />
 
         <TextView
             android:layout_width="wrap_content"

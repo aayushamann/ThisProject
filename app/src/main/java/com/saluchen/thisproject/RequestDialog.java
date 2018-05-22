@@ -1,18 +1,14 @@
 package com.saluchen.thisproject;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -30,7 +26,6 @@ public class RequestDialog extends AppCompatActivity {
     private EditText expectedDateText;
     private EditText expectedTimeText;
     SharedPreferences sharedPreferences;
-    android.widget.Button btn_drop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,45 +45,32 @@ public class RequestDialog extends AppCompatActivity {
         expectedDateText.setText(sharedPreferences.getString(Config.expectedDate, ""));
         expectedTimeText.setText(sharedPreferences.getString(Config.expectedTime, ""));
 
+
         expectedDateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(RequestDialog.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                new DatePickerDialog(RequestDialog.this, date,
+                        myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
-        btn_drop = (Button) findViewById(R.id.drop_location_button);
-        btn_drop.setOnClickListener(new View.OnClickListener() {
+        expectedTimeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Button", "Drop Pressed");
-                String itemName = itemNameText.getText().toString();
-                String itemDetails = itemDetailsText.getText().toString();
-                String date = expectedDateText.getText().toString();
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Config.itemName, itemName);
-                editor.putString(Config.itemDetail, itemDetails);
-                editor.putString(Config.expectedDate, date);
-                editor.apply();
-
-                String message = "hello ";
-                Intent intent = new Intent(RequestDialog.this, HomeActivity.class);
-                Bundle extras = new Bundle();
-                extras.putString("itemName", itemName);
-                extras.putString("itemDetails", itemDetails);
-                extras.putString("expectedDate", date);
-                for (String key : extras.keySet()) {
-                    Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
-                }
-                intent.putExtras(extras);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                setResult(2, intent);
-                finish();
+                new TimePickerDialog(RequestDialog.this, time,
+                        myCalendar.get(Calendar.HOUR_OF_DAY),
+                        myCalendar.get(Calendar.MINUTE), false).show();
             }
         });
+
+//        btn_drop = (Button) findViewById(R.id.drop_location_button);
+//        btn_drop.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("Button", "Drop Pressed");
+//
+//        });
     }
 
     DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -99,52 +81,72 @@ public class RequestDialog extends AppCompatActivity {
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
+            updateDateLabel();
         }
     };
 
-//    TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-//        @Override
-//        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-//            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
-//            myCalendar.set(Calendar.MINUTE, minute);
-//        }
-//    };
+    TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
+            myCalendar.set(Calendar.MINUTE, minute);
+            updateTimeLabel();
+        }
+    };
 
-    private void updateLabel() {
+    private void updateDateLabel() {
 
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         expectedDateText.setText(sdf.format(myCalendar.getTime()));
     }
 
-    public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "timePicker");
+    private void updateTimeLabel() {
+        String timeFormat = "h:mm a";
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat, Locale.US);
+        expectedTimeText.setText(sdf.format(myCalendar.getTime()));
     }
 
-    /*    public void onRequestDropLocationButton(View view) {
+    public void onRequestDropLocationButton(View view) {
+        String itemName = itemNameText.getText().toString();
+        String itemDetails = itemDetailsText.getText().toString();
+        String date = expectedDateText.getText().toString();
+        String time = expectedTimeText.getText().toString();
 
-            Log.d("Button","Drop Pressed");
-            String itemName = itemNameText.getText().toString();
-            String itemDetails = itemDetailsText.getText().toString();
-            String date = expectedDateText.getText().toString();
-
+        if (itemName.isEmpty()) {
+            itemNameText.setError("This field is required");
+        } else if (itemDetails.isEmpty()) {
+            itemDetailsText.setError("This field is required");
+        } else if (date.isEmpty()) {
+            expectedDateText.setError("This field is required");
+        } else if (time.isEmpty()) {
+            expectedTimeText.setError("This field is required");
+        } else {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(Config.itemName, itemName);
             editor.putString(Config.itemDetail, itemDetails);
             editor.putString(Config.expectedDate, date);
+            editor.putString(Config.expectedTime, time);
             editor.apply();
 
-
-            String message="hello ";
-            Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
-            intent.putExtra("MESSAGE",message);
+            Intent intent = new Intent(RequestDialog.this, HomeActivity.class);
+            Bundle extras = new Bundle();
+            extras.putString(Config.itemName, itemName);
+            extras.putString(Config.itemDetail, itemDetails);
+            extras.putString(Config.expectedDate, date);
+            extras.putString(Config.expectedTime, time);
+            intent.putExtras(extras);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            setResult(2,intent);
+
+            for (String key : extras.keySet()) {
+                Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
+            }
+
+            setResult(2, intent);
             finish();
         }
-    */
+    }
+
     @Override
     public void onBackPressed() {
         String message = "FromRequestDialog ";
@@ -154,25 +156,5 @@ public class RequestDialog extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         setResult(1, intent);
         finish();
-    }
-
-    public static class TimePickerFragment extends DialogFragment
-            implements TimePickerDialog.OnTimeSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
-                    DateFormat.is24HourFormat(getActivity()));
-        }
-
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // Do something with the time chosen by the user
-        }
     }
 }
