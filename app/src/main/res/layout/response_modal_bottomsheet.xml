@@ -1,138 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
     android:background="#F3F3F3"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="Enter Radius Limit"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="10dp"
-        />
-
-    <EditText
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:hint="X"
-        android:inputType="number"
-        android:layout_gravity="center"
-        android:layout_marginRight="20dp"
-        android:id="@+id/radius_limit"
-        />
-
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="km"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:gravity="center"
-            android:layout_marginRight="20dp"
-            />
-<!--        <EditText
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:hint="Y"
-            android:inputType="number"
             android:layout_gravity="center"
-            android:layout_marginRight="20dp"
-            />
+            android:layout_weight="1"
+            android:text="Enter Radius Limit (KM)"
+            android:textSize="16sp" />
 
-        <TextView
+        <EditText
+            android:id="@+id/radius_limit"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="m"
-            android:gravity="center"
-            android:layout_marginRight="30dp"
-            />-->
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="20dp"
+            android:inputType="number"
+            android:layout_weight="1"/>
 
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginEnd="20dp"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="KM"-->
+            <!--android:layout_weight="1"/>-->
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Enter Time Limit"
-            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:gravity="center"
-            android:layout_marginRight="30dp"
-            android:layout_marginLeft="10dp"
-            />
-<!--
-        <EditText
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:hint="X"
-            android:inputType="number"
+            android:layout_weight="1"
+            android:text="Enter Time Limit (Hours)"
             android:layout_gravity="center"
-            android:layout_marginRight="20dp"
-            />
+            android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="days"
-            android:gravity="center"
-            android:layout_marginRight="20dp"
-            />-->
         <EditText
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:hint="Y"
-            android:inputType="number"
-            android:layout_gravity="center"
-            android:layout_marginRight="20dp"
             android:id="@+id/time_limit"
-            />
-
-        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="hours"
-            android:gravity="center"
-            android:layout_marginRight="30dp"
-            />
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:inputType="number" />
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginEnd="20dp"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="Hours" />-->
 
 
     </LinearLayout>
+
     <Button
+        android:id="@+id/choose_location"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_overlay"
-        android:text="CHOOSE LOCATION"
-        android:textColor="@color/colorBlack"
-        android:id="@+id/choose_location"/>
-
-<!--    <Button
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="Make a Call"
-        style="@style/action_button_bs"
-        android:id="@+id/btn_call"/>
-    <Button
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="Chat in Whatsapp"
-        style="@style/action_button_bs"
-        android:textAllCaps="false"
-        android:id="@+id/btn_whatsapp"/>
-    <Button
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="Open in Google Maps"
-        android:textColor="#D04D5B"
-        style="@style/action_button_bs"
-        android:id="@+id/btn_gmap"/>-->
+        android:background="@color/colorBlack"
+        android:layout_marginTop="16dp"
+        android:text="Choose Location"
+        android:textColor="@color/colorGreenLight" />
 </LinearLayout>

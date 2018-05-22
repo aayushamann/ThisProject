@@ -1,12 +1,15 @@
 package com.saluchen.thisproject;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +28,7 @@ public class RequestDialog extends AppCompatActivity {
     private EditText itemNameText;
     private EditText itemDetailsText;
     private EditText expectedDateText;
+    private EditText expectedTimeText;
     SharedPreferences sharedPreferences;
     android.widget.Button btn_drop;
 
@@ -39,10 +43,12 @@ public class RequestDialog extends AppCompatActivity {
         itemNameText = findViewById(R.id.request_item_name);
         itemDetailsText = findViewById(R.id.request_item_details);
         expectedDateText = findViewById(R.id.request_expected_date);
+        expectedTimeText = findViewById(R.id.request_expected_time);
 
         itemNameText.setText(sharedPreferences.getString(Config.itemName, ""));
         itemDetailsText.setText(sharedPreferences.getString(Config.itemDetail, ""));
         expectedDateText.setText(sharedPreferences.getString(Config.expectedDate, ""));
+        expectedTimeText.setText(sharedPreferences.getString(Config.expectedTime, ""));
 
         expectedDateText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,19 +103,24 @@ public class RequestDialog extends AppCompatActivity {
         }
     };
 
-    TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
-            myCalendar.set(Calendar.MINUTE, minute);
-        }
-    };
+//    TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+//        @Override
+//        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+//            myCalendar.set(Calendar.HOUR_OF_DAY, hour);
+//            myCalendar.set(Calendar.MINUTE, minute);
+//        }
+//    };
 
     private void updateLabel() {
 
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         expectedDateText.setText(sdf.format(myCalendar.getTime()));
+    }
+
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
     /*    public void onRequestDropLocationButton(View view) {
@@ -143,5 +154,25 @@ public class RequestDialog extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         setResult(1, intent);
         finish();
+    }
+
+    public static class TimePickerFragment extends DialogFragment
+            implements TimePickerDialog.OnTimeSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
+        }
     }
 }
