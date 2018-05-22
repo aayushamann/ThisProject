@@ -52,7 +52,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 .getCredential(sharedPreferences.getString(Config.CURRENT_EMAIL, ""),
                         sharedPreferences.getString(Config.CURRENT_PASSWORD, ""));
 
-        if (currentPassword.equals(sharedPreferences.getString(Config.CURRENT_PASSWORD, ""))){
+        if (currentPassword.equals(sharedPreferences.getString(Config.CURRENT_PASSWORD, ""))) {
             currentUser.reauthenticate(credential)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -74,13 +74,11 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                 }
                             }
                         });
-            }
-            else {
+            } else {
                 Toast.makeText(ChangePasswordActivity.this, "Passwords do not match.",
                         Toast.LENGTH_SHORT).show();
             }
-        }
-        else {
+        } else {
             Toast.makeText(ChangePasswordActivity.this, "Wrong current password.",
                     Toast.LENGTH_SHORT).show();
         }

@@ -6,7 +6,8 @@ public class Response {
     public String status;
     public String delay;
 
-    public Response() {}
+    public Response() {
+    }
 
     public Response(String last_location, String status, String delay) {
 

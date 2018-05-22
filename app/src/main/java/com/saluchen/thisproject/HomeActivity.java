@@ -109,7 +109,8 @@ public class HomeActivity extends AppCompatActivity
     private GoogleMap mMap;
     private ClusterManager<MyItem> mClusterManager;
 
-    android.widget.Button btn_gmap,btn_call,btn_whatsapp,btn_setlocation;
+    android.widget.Button btn_setlocation;
+    android.widget.ImageView btn_gmap,btn_call,btn_whatsapp;
     android.support.design.widget.BottomSheetDialog request_dialog_bs,response_dialog_bs;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -336,17 +337,20 @@ public class HomeActivity extends AppCompatActivity
         Log.d("XXXXX","AA raha hai");
         super.onActivityResult(requestCode, resultCode, data);
 
+        if(resultCode!=1)
+        {
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.d("XXXXX","OKAY");
+                        Log.d("XXXXX", "OKAY");
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         getDeviceLocation(false);
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.d("XXXXX","CANCELLED");
+                        Log.d("XXXXX", "CANCELLED");
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         break;
                 }
@@ -354,8 +358,7 @@ public class HomeActivity extends AppCompatActivity
 
             case 2:
                 Bundle extras = data.getExtras();
-                for (String key : extras.keySet())
-                {
+                for (String key : extras.keySet()) {
                     Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
                 }
 
@@ -365,6 +368,7 @@ public class HomeActivity extends AppCompatActivity
                 typ = 1;
                 dragMap();
         }
+    }
     }
 
     private void setBottomNavBar(){
@@ -603,7 +607,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Add cluster items (markers) to the cluster manager.
 
-//        addItems(latLng);
+        addDefaultItems();
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
         Log.d(TAG,x.toString());
@@ -612,32 +616,35 @@ public class HomeActivity extends AppCompatActivity
         Toast.makeText(this,y.getMarkers().toString(),Toast.LENGTH_SHORT).show();
     }
 
+    private void addDefaultItems()
+    {
+         //Set some lat/lng coordinates to start with.
+        double lat = 26.0000000;
+        double lng = 82.0000000;
+
+        String title = "This is the title";
+        String snippet = "and this is the snippet.";
+
+         //Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 100; i++) {
+            double offset = i / 6000d;
+            lat = lat + offset;
+            lng = lng + offset;
+            //String title = "This is the title";
+            //String snippet = "and this is the snippet.";
+            // Create a cluster item for the marker and set the title and snippet using the constructor.
+            MyItem infoWindowItem = new MyItem(lat, lng, "This is the title", "and this is the snippet");
+            // Add the cluster item (marker) to the cluster manager.
+            mClusterManager.addItem(infoWindowItem);
+        }
+    }
+
     private void addItems(String latitude, String longitude, String title, String snippet) {
 
         double lat = Float.parseFloat(latitude);
         double lng = Float.parseFloat(longitude);
         MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
         mClusterManager.addItem(infoWindowItem);
-
-        // Set some lat/lng coordinates to start with.
-//        double lat = 26.0000000;
-//        double lng = 82.0000000;
-
-        //String title = "This is the title";
-        //String snippet = "and this is the snippet.";
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-//        for (int i = 0; i < 100; i++) {
-//            double offset = i / 6000d;
-//            lat = lat + offset;
-//            lng = lng + offset;
-//            String title = "This is the title";
-//            String snippet = "and this is the snippet.";
-//            // Create a cluster item for the marker and set the title and snippet using the constructor.
-//            MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
-//            // Add the cluster item (marker) to the cluster manager.
-//            mClusterManager.addItem(infoWindowItem);
-//        }
     }
 
     private GoogleMap getMap() {
@@ -653,9 +660,9 @@ public class HomeActivity extends AppCompatActivity
         request_dialog_bs.setCanceledOnTouchOutside(true);
         request_dialog_bs.setCancelable(true);
 
-        btn_whatsapp = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_whatsapp);
-        btn_call = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_call);
-        btn_gmap = (android.widget.Button)modalbottomsheet.findViewById(R.id.btn_gmap);
+        btn_whatsapp = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_whatsapp);
+        btn_call = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_call);
+        btn_gmap = (android.widget.ImageView)modalbottomsheet.findViewById(R.id.btn_gmap);
         titleText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
         //DetailText = (android.widget.TextView)modalbottomsheet.findViewById(R.id.titleText);
     }
@@ -830,7 +837,7 @@ public class HomeActivity extends AppCompatActivity
 
                                 }
                                 else {
-                                    mMap.clear();
+                                    //mMap.clear();
                                     setUpCircle(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                                 /*moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                         DEFAULT_ZOOM,

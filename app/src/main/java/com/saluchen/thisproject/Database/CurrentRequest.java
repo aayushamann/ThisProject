@@ -9,10 +9,11 @@ public class CurrentRequest {
     public String datetime;
     public String accept_id;
 
-    public CurrentRequest(){}
+    public CurrentRequest() {
+    }
 
-    public CurrentRequest (String latitude, String longitude, String request_title, String details,
-                           String datetime, String accept_id) {
+    public CurrentRequest(String latitude, String longitude, String request_title, String details,
+                          String datetime, String accept_id) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.request_title = request_title;

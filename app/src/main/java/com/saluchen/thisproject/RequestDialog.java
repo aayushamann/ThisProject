@@ -9,10 +9,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Button;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -52,11 +53,11 @@ public class RequestDialog extends AppCompatActivity {
             }
         });
 
-        btn_drop = (Button)findViewById(R.id.drop_location_button);
+        btn_drop = (Button) findViewById(R.id.drop_location_button);
         btn_drop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Button","Drop Pressed");
+                Log.d("Button", "Drop Pressed");
                 String itemName = itemNameText.getText().toString();
                 String itemDetails = itemDetailsText.getText().toString();
                 String date = expectedDateText.getText().toString();
@@ -67,19 +68,18 @@ public class RequestDialog extends AppCompatActivity {
                 editor.putString(Config.expectedDate, date);
                 editor.apply();
 
-                String message="hello ";
-                Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
+                String message = "hello ";
+                Intent intent = new Intent(RequestDialog.this, HomeActivity.class);
                 Bundle extras = new Bundle();
-                extras.putString("itemName",itemName);
-                extras.putString("itemDetails",itemDetails);
-                extras.putString("expectedDate",date);
-                for (String key : extras.keySet())
-                {
+                extras.putString("itemName", itemName);
+                extras.putString("itemDetails", itemDetails);
+                extras.putString("expectedDate", date);
+                for (String key : extras.keySet()) {
                     Log.d("Bundle Debug", key + " = \"" + extras.get(key) + "\"");
                 }
                 intent.putExtras(extras);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                setResult(2,intent);
+                setResult(2, intent);
                 finish();
             }
         });
@@ -112,36 +112,36 @@ public class RequestDialog extends AppCompatActivity {
         expectedDateText.setText(sdf.format(myCalendar.getTime()));
     }
 
-/*    public void onRequestDropLocationButton(View view) {
+    /*    public void onRequestDropLocationButton(View view) {
 
-        Log.d("Button","Drop Pressed");
-        String itemName = itemNameText.getText().toString();
-        String itemDetails = itemDetailsText.getText().toString();
-        String date = expectedDateText.getText().toString();
+            Log.d("Button","Drop Pressed");
+            String itemName = itemNameText.getText().toString();
+            String itemDetails = itemDetailsText.getText().toString();
+            String date = expectedDateText.getText().toString();
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(Config.itemName, itemName);
-        editor.putString(Config.itemDetail, itemDetails);
-        editor.putString(Config.expectedDate, date);
-        editor.apply();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(Config.itemName, itemName);
+            editor.putString(Config.itemDetail, itemDetails);
+            editor.putString(Config.expectedDate, date);
+            editor.apply();
 
 
-        String message="hello ";
-        Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
-        intent.putExtra("MESSAGE",message);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        setResult(2,intent);
-        finish();
-    }
-*/
+            String message="hello ";
+            Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
+            intent.putExtra("MESSAGE",message);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            setResult(2,intent);
+            finish();
+        }
+    */
     @Override
     public void onBackPressed() {
-        String message="FromRequestDialog ";
-        Log.d("Button","Back Pressed");
-        Intent intent=new Intent(RequestDialog.this,HomeActivity.class);
-        intent.putExtra("MESSAGE",message);
+        String message = "FromRequestDialog ";
+        Log.d("Button", "Back Pressed");
+        Intent intent = new Intent(RequestDialog.this, HomeActivity.class);
+        intent.putExtra("MESSAGE", message);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        setResult(1,intent);
+        setResult(1, intent);
         finish();
     }
 }

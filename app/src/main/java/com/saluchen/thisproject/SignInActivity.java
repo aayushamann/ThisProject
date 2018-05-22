@@ -58,7 +58,7 @@ public class SignInActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            if(isServicesOK()){
+            if (isServicesOK()) {
                 startActivity(new Intent(SignInActivity.this,
                         HomeActivity.class));
                 finish();
@@ -70,8 +70,7 @@ public class SignInActivity extends AppCompatActivity {
         if (!isInternetConnected()) {
             Toast.makeText(SignInActivity.this, "Connection error",
                     Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             progressBar.setVisibility(View.VISIBLE);
 
             EditText emailText = findViewById(R.id.sign_in_email);
@@ -111,8 +110,7 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                             }
                         });
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Toast.makeText(SignInActivity.this, "Invalid Credentials.",
                         Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
@@ -126,22 +124,21 @@ public class SignInActivity extends AppCompatActivity {
                 SignUpActivity.class));
     }
 
-    public boolean isServicesOK(){
+    public boolean isServicesOK() {
         Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(SignInActivity.this);
 
-        if(available == ConnectionResult.SUCCESS){
+        if (available == ConnectionResult.SUCCESS) {
             //everything is fine and the user can make map requests
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }
-        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             //an error occured but we can resolve it
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(SignInActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
+        } else {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
