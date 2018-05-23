@@ -224,6 +224,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 mSearchText.setText("");
+                clearText.setVisibility(View.GONE);
             }
         });
 
