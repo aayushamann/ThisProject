@@ -30,8 +30,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
-
         this.setTitle("Change Password");
+        this.setTitleColor(R.color.colorGreen);
+
         sharedPreferences = getSharedPreferences(Config.sharedPrefs,
                 Context.MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();

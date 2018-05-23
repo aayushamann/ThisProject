@@ -186,7 +186,7 @@ public class HomeActivity extends AppCompatActivity
 
         progressBar.setVisibility(View.VISIBLE);
 
-        database.child("user").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        database.child(Config.TABLE_USER).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
@@ -260,19 +260,22 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
             startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
-        } else if (id == R.id.nav_request_history) {
+        }
+        else if (id == R.id.nav_request_history) {
+            startActivity(new Intent(HomeActivity.this, RequestHistoryActivity.class));
+        }
+        else if (id == R.id.nav_response_history) {
 
-        } else if (id == R.id.nav_response_history) {
-
-        } else if (id == R.id.nav_share) {
+        }
+        else if (id == R.id.nav_share) {
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, "Download \"This Project\" android app " +
                     "and start earning now.");
             startActivity(shareIntent);
-
-        } else if (id == R.id.nav_sign_out) {
+        }
+        else if (id == R.id.nav_sign_out) {
             mAuth.signOut();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.clear();
@@ -764,6 +767,7 @@ public class HomeActivity extends AppCompatActivity
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
 
+                    clearText.setVisibility(View.VISIBLE);
                     //execute our method for searching
                     geoLocate();
                 }

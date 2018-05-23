@@ -82,6 +82,7 @@
     <string name="nav_menu_response_history">Your Responses</string>
     <string name="nav_menu_sign_out">Sign Out</string>
     <string name="nav_menu_share">Share</string>
+    <string name="title_activity_request_history">Request History</string>
 
 </resources>
 

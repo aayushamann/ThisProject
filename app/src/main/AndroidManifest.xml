@@ -78,6 +78,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.saluchen.thisproject.SignInActivity" />
         </activity>
+        <activity
+            android:name=".RequestHistoryActivity"
+            android:label="@string/title_activity_request_history"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.saluchen.thisproject.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
