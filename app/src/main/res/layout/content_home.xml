@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapsActivity" />
+
+
+    <RelativeLayout
+        android:id="@+id/relLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/white_border">
+
+        <ImageView
+            android:id="@+id/ic_dehaze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_dehaze" />
+
+        <AutoCompleteTextView
+            android:id="@+id/input_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/ic_dehaze"
+            android:background="@null"
+            android:hint="Enter Request Location"
+            android:imeOptions="actionGo"
+            android:inputType="text"
+            android:textColor="#000"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/home_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/relLayout1"
+        android:indeterminate="true"
+        android:background="@color/colorBlack"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/ic_gps"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="80dp"
+        android:layout_marginStart="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_gps" />
+
+    <ImageView
+        android:id="@+id/imageMarker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/image_marker3"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/request_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/request_str"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/respond_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/respond_str"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/status_str"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/request_button_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/request_done_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@color/colorBlack"
+            android:text="DONE"
+            android:textColor="@color/colorGreenLight"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/request_cancel_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:background="@color/colorBlack"
+            android:text="Cancel"
+            android:textColor="@color/colorGreenLight"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/white"
+        app:itemIconTint="@color/grey3"
+        app:itemTextColor="@color/grey3"
+        app:menu="@menu/bottom_navigation_main" />
+
+</RelativeLayout>

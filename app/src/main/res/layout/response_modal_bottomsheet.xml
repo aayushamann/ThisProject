@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="4dp"
+    android:layout_marginStart="4dp"
+    android:background="#F3F3F3"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Enter Radius Limit (KM)"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/radius_limit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:inputType="number" />
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="20dp"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="KM"-->
+        <!--android:layout_weight="1"/>-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Enter Time Limit (Hours)"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/time_limit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:inputType="number" />
+
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="20dp"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="Hours" />-->
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/choose_location"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorBlack"
+        android:text="Choose Location"
+        android:textColor="@color/colorGreenLight" />
+</LinearLayout>
