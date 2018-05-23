@@ -615,7 +615,8 @@ public class HomeActivity extends AppCompatActivity
         // mMap.addMarker(new MarkerOptions().position(bounds.northeast).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
         //mMap.addMarker(new MarkerOptions().position(bounds.southwest).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
 
-        Toast.makeText(this, "Circle Drawn", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Circle Drawn", Toast.LENGTH_SHORT).show();
+
 
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
@@ -659,9 +660,10 @@ public class HomeActivity extends AppCompatActivity
         mClusterManager.cluster();
         MarkerManager.Collection x = mClusterManager.getClusterMarkerCollection();
         Log.d(TAG, x.toString());
-        Toast.makeText(this, x.getMarkers().toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, x.getMarkers().toString(), Toast.LENGTH_SHORT).show();
         MarkerManager.Collection y = mClusterManager.getMarkerCollection();
-        Toast.makeText(this, y.getMarkers().toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, y.getMarkers().toString(), Toast.LENGTH_SHORT).show();
+
     }
 
     private void addDefaultItems() {
@@ -853,12 +855,14 @@ public class HomeActivity extends AppCompatActivity
                                         "My Location", noPlaceInfo);*/
                                 }
                             } else {
-                                Toast.makeText(HomeActivity.this, "Allow Location", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(HomeActivity.this, "Allow Location On You Phone", Toast.LENGTH_SHORT).show();
+
                             }
 
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(HomeActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this, "Unable to Get Current Location", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 });
@@ -874,11 +878,13 @@ public class HomeActivity extends AppCompatActivity
 
     private void moveCamera(LatLng latLng, float zoom, String title, PlaceInfo placeInfo) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         //mMap.clear();
         if (placeInfo != null) {
             try {
-                Toast.makeText(this, "PlaceInfo Wala", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "PlaceInfo Wala", Toast.LENGTH_SHORT).show();
+
                 //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapActivity.this));
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
                         "Phone Number: " + placeInfo.getPhonenumber() + "\n" +
@@ -896,11 +902,12 @@ public class HomeActivity extends AppCompatActivity
                 Log.e(TAG, "moveCamera: NullPointerException: " + e.getMessage());
             }
         } else {
-            Toast.makeText(this, "No PlaceInfo", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "No PlaceInfo", Toast.LENGTH_SHORT).show();
             //mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapActivity.this));
             String snippet = "";
             if (!title.equals("My Location")) {
-                Toast.makeText(this, "Not my location", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Not my location", Toast.LENGTH_SHORT).show();
+
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(title)
@@ -909,7 +916,8 @@ public class HomeActivity extends AppCompatActivity
                 mMarker = mMap.addMarker(options);
 
             } else {
-                Toast.makeText(this, "My location", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "My location", Toast.LENGTH_SHORT).show();
+
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(title)
@@ -938,7 +946,7 @@ public class HomeActivity extends AppCompatActivity
             Address address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
-            Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
                     address.getAddressLine(0), noPlaceInfo);
@@ -1059,7 +1067,8 @@ public class HomeActivity extends AppCompatActivity
         // Does nothing, but you could go to a list of the users.
 
         Log.d(TAG, "onClusterInfoWindowClick");
-        Toast.makeText(HomeActivity.this, "onClusterInfoWindowClick", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(HomeActivity.this, "onClusterInfoWindowClick", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -1111,7 +1120,8 @@ public class HomeActivity extends AppCompatActivity
         });
         Log.d(TAG, "onClusterItemInfoWindowClick");
         // Does nothing, but you could go into the user's profile page, for example.
-        Toast.makeText(HomeActivity.this, item.getPosition() + "onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(HomeActivity.this, item.getPosition() + "onClusterItemInfoWindowClick", Toast.LENGTH_SHORT).show();
+
     }
 
 
