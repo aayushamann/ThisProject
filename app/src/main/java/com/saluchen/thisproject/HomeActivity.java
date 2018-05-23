@@ -131,6 +131,7 @@ public class HomeActivity extends AppCompatActivity
     private FirebaseDatabase mDatabase;
 
     private ImageView dehaze;
+    private ImageView clearText;
     TextView titleText;
 
     EditText radius_limit, time_limit;
@@ -156,6 +157,7 @@ public class HomeActivity extends AppCompatActivity
                 Context.MODE_PRIVATE);
 
         dehaze = (ImageView) findViewById(R.id.ic_dehaze);
+        clearText = (ImageView) findViewById(R.id.search_location_clear);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -204,6 +206,27 @@ public class HomeActivity extends AppCompatActivity
         RetrieveAllRequests();
 
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
+
+        mSearchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String searchText = mSearchText.getText().toString();
+                if (!searchText.isEmpty()) {
+                    clearText.setVisibility(View.VISIBLE);
+                }
+                else {
+                    clearText.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        clearText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchText.setText("");
+            }
+        });
+
         mGps = (ImageView) findViewById(R.id.ic_gps);
         init_request_modal_bottomsheet();
         getLocationPermission();
