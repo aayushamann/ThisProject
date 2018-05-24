@@ -8,7 +8,10 @@ public class RequestHistoryItem {
     private String deliveryLocation;
     private String status;
 
-    public RequestHistoryItem() {};
+    public RequestHistoryItem() {
+    }
+
+    ;
 
     public RequestHistoryItem(String itemName, String itemDetails, String expectedDatetime,
                               String deliveryLocation, String status) {

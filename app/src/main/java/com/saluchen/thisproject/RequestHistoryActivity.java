@@ -67,7 +67,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot request: dataSnapshot.getChildren()) {
+                        for (DataSnapshot request : dataSnapshot.getChildren()) {
                             CurrentRequest currentRequest = request.getValue(CurrentRequest.class);
                             String item = currentRequest.request_title;
                             String detail = currentRequest.details;

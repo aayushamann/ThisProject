@@ -381,7 +381,7 @@ public class HomeActivity extends AppCompatActivity
         request_cancel_button.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.VISIBLE);
 
-        ImageView iv = findViewById(R.id.imageMarker);
+        final ImageView iv = findViewById(R.id.imageMarker);
         iv.setVisibility(View.VISIBLE);
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
@@ -406,7 +406,24 @@ public class HomeActivity extends AppCompatActivity
                     Log.d(TAG, "Made a successful request");
                     String dateTime = itemDate + " " + itemTime;
                     onAddRequest(midlatt, midlngg, itemName, itemDetails, dateTime, "0");
+                    iv.setVisibility(View.INVISIBLE);
+                    MarkerOptions options = new MarkerOptions()
+                            .position(new LatLng(midlat,midlng))
+                            .title(itemName)
+                            .snippet(itemDetails)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+
+                    mMarker = mMap.addMarker(options);
                 } else if (typ == 2) {
+                    mMap.clear();
+                    mMap.addCircle(new CircleOptions()
+                                    .center(new LatLng(midlat,midlng))
+                                    .radius(1000*radius)
+                                    .strokeWidth(0)
+                                    .strokeColor(Color.argb(128,135,206,250))
+                                    .fillColor(Color.argb(128,135,206,250))
+                                    .clickable(true));
+
                     Log.d("radius", String.valueOf(radius));
                     Log.d(TAG, "Made a successful response");
                 }
@@ -867,7 +884,7 @@ public class HomeActivity extends AppCompatActivity
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(HomeActivity.this, "Unable to Get Current Location", Toast.LENGTH_SHORT).show();
 
-                        }
+                          }
                     }
                 });
             }
